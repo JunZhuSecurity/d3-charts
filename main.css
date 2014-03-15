@@ -1,0 +1,32 @@
+
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.cpu {
+    fill: green;
+    stroke: none;
+    stroke-width: 0px;
+    shape-rendering: crispEdges;
+}
+
+.cpu2 {
+    fill: red;
+    stroke: none;
+    stroke-width: 0px;
+    shape-rendering: crispEdges;
+}
