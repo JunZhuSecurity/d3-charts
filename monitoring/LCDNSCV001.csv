@@ -1,4 +1,4 @@
-Time,Small_count,Small_min,Small_q1,Small_median,Small_q3,Small_max,Small_avg,Small_stddev,Large_count,Large_min,Large_q1,Large_median,Large_q3,Large_max,Large_avg,Large_stddev,Big_count,Big_min,Big_q1,Big_median,Big_q3,Big_max,Big_avg,Big_stddev,CPU,RAM,currenturiscached,totalflusheduris,totaluriscached,uricacheflushes,uricachehits,uricachemisses
+Time,Small_count,Small_min,Small_q1,Small_median,Small_q3,Small_max,Small_avg,Small_stddev,Large_count,Large_min,Large_q1,Large_median,Large_q3,Large_max,Large_avg,Large_stddev,Big_count,Big_min,Big_q1,Big_median,Big_q3,Big_max,Big_avg,Big_stddev,TCP,CPU,RAM,currenturiscached,totalflusheduris,totaluriscached,uricacheflushes,uricachehits,uricachemisses
 2014-02-28 16:18:28 +0100,40,10.0,11.0,11.0,12.0,20.0,11.65,1.52,40,14.0,17.0,22.0,25.0,32.0,21.63,5.8,40,16.0,18.75,26.0,33.0,40.0,26.4,7.44
 2014-02-28 16:23:28 +0100,40,11.0,11.0,11.0,12.0,22.0,11.63,1.92,40,11.0,14.0,15.0,18.0,26.0,16.88,3.79,40,16.0,19.0,25.0,26.0,38.0,24.58,5.36
 2014-02-28 16:48:33 +0100,40,11.0,11.0,11.0,11.0,17.0,11.33,1.26,40,11.0,14.0,17.5,19.0,33.0,17.7,4.5,40,16.0,17.0,20.5,25.25,40.0,22.2,6.15

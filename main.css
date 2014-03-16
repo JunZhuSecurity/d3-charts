@@ -1,7 +1,6 @@
 
-
 .axis text {
-  font: 10px sans-serif;
+  font: 11px Verdana;
 }
 
 .axis path,
@@ -11,9 +10,9 @@
   shape-rendering: crispEdges;
 }
 
-.line {
+.cpu-line {
   fill: none;
-  stroke: steelblue;
+  stroke: hsl(132, 100%, 25%);
   stroke-width: 1.5px;
 }
 
@@ -24,9 +23,3 @@
     shape-rendering: crispEdges;
 }
 
-.cpu2 {
-    fill: red;
-    stroke: none;
-    stroke-width: 0px;
-    shape-rendering: crispEdges;
-}
