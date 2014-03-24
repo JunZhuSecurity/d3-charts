@@ -10,9 +10,22 @@
   shape-rendering: crispEdges;
 }
 
+.marker-line
+{
+    fill: none;
+    stroke: red;
+    stroke-width: 1px;
+}
+
 .cpu-line {
   fill: none;
   stroke: hsl(132, 100%, 25%);
+  stroke-width: 1.5px;
+}
+
+.ram-line {
+  fill: none;
+  stroke: hsl(220, 100%, 25%);
   stroke-width: 1.5px;
 }
 
