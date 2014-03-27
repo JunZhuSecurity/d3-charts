@@ -7,7 +7,8 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
+  <script src="js/vendor/jquery-1.10.2.min.js"></script>
+  <script src="js/vendor/bootstrap.min.js"></script>
   <link rel="stylesheet" href="css/vendor/bootstrap.min.css">
   <link rel="stylesheet" href="main.css">
 
@@ -15,14 +16,18 @@
     .border-blue {border-style:solid; border-width:1px; border-color:lightblue}
     .border-green {border-style:solid; border-width:1px; border-color:lightgreen}
     .border-red {border-style:solid; border-width:1px; border-color:lightcoral}
-    .row {margin-bottom:18px; box-shadow:2px 2px 5px #d0d0d4; background-color: #f0f0f4; border-radius:5px;}
+    .row {margin-bottom:18px; box-shadow:2px 2px 5px #d0d0d2; background-color: #f4f4f8; border-radius:5px;}
 
     .swimlane {font-size:14px; text-align:right;}
     .vmgroup {font-size:36px; margin-bottom:-8px}
+
+
+    .kpi-row {display:table; width:100%;margin-top:5px;}
     .kpi {display:table-cell;
           background: linear-gradient(to bottom, #fefcea 0%,#f1da36 100%);
           border: 1px solid; border-radius:4px; padding:2px;
-          width:100px}
+          width:49%}
+    .kpi-space {display:table-cell: width:2%}
     .kpi .usage {font-size:20px; font-weight: bold;text-align:right; white-space: nowrap; margin-bottom:-3px}
     .kpi .title {text-align:right; font-size:12px;  }
 
@@ -40,59 +45,58 @@
   <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
         <a class="navbar-brand" href="#">AS24 VM Dashboard</a>
       </div>
-      <div class="navbar-collapse ">
-          <div>Sort By</div>
-          <button type="submit" class="btn btn-success">CPU Usage</button>
-          <button type="submit" class="btn btn-success">Ram Usage</button>
-          <button type="submit" class="btn btn-success">VM Count</button>
+      <div class="">
+        <ul class="nav nav-pills">
+          <li class="active"><a href="#">VM Count</a></li>
+          <li><a href="#">CPU Usage</a></li>
+          <li><a href="#">RAM Usage</a></li>
+        </ul>
       </div>
+
     </div>
+
   </div>
 
   <div class="jumbotron">
     <div class="container">
-      <h1>AS24 VM Dashboard</h1>
-      <p><a class="btn btn-primary btn-lg" role="button">Learn more »</a></p>
+      <h2>Total Number of VMs</h2>
+      <h2>Total Number of CPU</h2>
     </div>
   </div>
 
   <div class="container">
-    <!-- Example row of columns -->
-    <div class="row">
-      <div id="WEBABV" class="col-md-3">
+
+    <div id="WEBABV" class="row">
+      <div class="col-md-3">
         <div class="vmgroup">WEBABV</div>
-        <div class="swimlane">MyArea</div>
-        <div class="swimlane">Owner: DLM+DSM</div>
-        <div style="margin-top:5px;">
+        <div class="swimlane">crodemeyer: MyArea</div>
+
+        <div class="kpi-row">
           <div class="kpi" title="Peak usage last 10 days">
             <div class="title">45% CPU</div>
             <div class="usage">14.2/598</div>
           </div>
-          <div style="display:table-cell;width:5px"></div>
+          <div class="kpi-space"></div>
           <div class="kpi">
             <div class="title">30% RAM [GiB]</div>
             <div class="usage">3.4/16</div>
           </div>
+        </div>
 
-          <div style="display:table-row;height:5px"></div>
+        <div class="kpi-row">
           <div class="kpi">
             <div class="title">IO [MB/s]</div>
             <div class="usage">456.9</div>
           </div>
-          <div style="display:table-cell;width:5px"></div>
+          <div class="kpi-space"></div>
           <div class="kpi">
             <div class="title">Latency [ms]</div>
             <div class="usage">23.3</div>
           </div>
         </div>
+
         <table class="env">
           <tr>
           <td></td>
