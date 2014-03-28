@@ -1,0 +1,25 @@
+﻿# KFALL mappvck003
+
+$cred = Import-Clixml .\mappvcv003.credential
+connect-viserver mappvcv003 -Credential $cred
+
+$vm = (get-vm | ? {$_.PowerState -eq "PoweredOn"})
+
+$live = ($vm | ?{$_.Name.StartsWith("L")})
+
+# net.received.average,net.transmitted.average
+
+get-stat $vm -stat cpu.usage.average,mem.active.average,disk.usage.average,net.usage.average  -start "2014-03-20 01:00" 
+
+$vm2[9..15] | ForEach{get-stat $_ -stat cpu.usage.average -start "2014-03-21 01:00" -finish 2014-03-22}
+
+$vm2[9..15] | ForEach{$hash[$_.Name] = get-stat $_ -stat cpu.usage.average -start "2014-03-21 01:00" -finish 2014-03-22}
+
+export-csv "$_.Name" -Encoding UTF8 -NoTypeInformation
+
+Write-Host "VMWARE\$(Get-Date -Format yyyy-MM-dd).csv"
+
+ rd 2014 -force -recurse
+
+C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -psc "C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\vim.psc1" -noe -c ". \"C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\Scripts\Initialize-PowerCLIEnvironment.ps1\""
+"C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\"
