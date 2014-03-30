@@ -21,15 +21,15 @@
     .swimlane {font-size:14px; text-align:right;}
     .vmgroup {font-size:36px; margin-bottom:-8px}
 
-
-    .kpi-row {display:table; width:100%;margin-top:5px;}
+    .kpi-row {display:table; width:100%; margin-top:4px;}
     .kpi {display:table-cell;
           background: linear-gradient(to bottom, #fefcea 0%,#f1da36 100%);
-          border: 1px solid; border-radius:4px; padding:2px;
-          width:49%}
-    .kpi-space {display:table-cell: width:2%}
-    .kpi .usage {font-size:20px; font-weight: bold;text-align:right; white-space: nowrap; margin-bottom:-3px}
-    .kpi .title {text-align:right; font-size:12px;  }
+          border: 1px solid; border-radius:3px; padding:2px;
+          width:49.5%}
+    .kpi-space {display:table-cell; width:1%}
+    .kpi .title {text-align:center; font-size:12px; }
+    .kpi .value {text-align:right; font-size:20px; font-weight: bold; white-space: nowrap; margin-bottom:-3px}
+    .kpi .unit {font-size:10px;}
 
     .env {margin-top: 10px; margin-bottom:5px; width:100%}
     .env td {padding:1px 3px; margin:5px;}
@@ -75,25 +75,28 @@
 
         <div class="kpi-row">
           <div class="kpi" title="Peak usage last 10 days">
-            <div class="title">45% CPU</div>
-            <div class="usage">14.2/598</div>
+            <div class="title pull-left">45%</div>
+            <div class="title">CPU</div>
+            <div class="value">14.2/598</div>
           </div>
           <div class="kpi-space"></div>
           <div class="kpi">
-            <div class="title">30% RAM [GiB]</div>
-            <div class="usage">3.4/16</div>
+            <div class="title">RAM [GiB]</div>
+            <div class="value">3.4/16</div>
           </div>
         </div>
 
         <div class="kpi-row">
           <div class="kpi">
-            <div class="title">IO [MB/s]</div>
-            <div class="usage">456.9</div>
+            <div class="title">Disk IO [MB/s]</div>
+            <div class="value pull-left">45.1</div>
+            <div class="value pull-right">6.9</div>
           </div>
           <div class="kpi-space"></div>
           <div class="kpi">
-            <div class="title">Latency [ms]</div>
-            <div class="usage">23.3</div>
+            <div class="title">Net IO [MB/s]</div>
+            <div class="value pull-left"><span class="unit">R</span>23.3</div>
+            <div class="value pull-right" title="Transmit"><span class="unit">W</span>45.7</div>
           </div>
         </div>
 
