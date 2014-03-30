@@ -138,7 +138,7 @@
 
 
     // Main
-    d3.json("data/timeline.json", function(error, json) {
+    d3.json("timeline.json", function(error, json) {
         var format = d3.time.format("%Y-%m-%d %H:%M:%S");
         json.time.forEach(function(t, i, a){a[i] = +format.parse(t) + 3600000;}); // 0100 Offset
         createChart(json);

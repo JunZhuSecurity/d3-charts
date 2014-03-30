@@ -1,9 +1,12 @@
 require 'csv'
 require 'json'
+require 'FileUtils'
 
 TIME = 0
 CPU = 26 # data[0].find_index('CPU') #note that the TCP header was forgotten
 RAM = 27
+
+FileUtils.chdir(__dir__)
 
 result = []
 
@@ -38,7 +41,7 @@ json[:time] = result.map{|row| row[0].sub(/ \+0100$/, '')}
 json[:cpu] = result.map{|row| row[1].reduce(0){|memo, cpu| memo + cpu_per_vm * (cpu ? cpu : 0) / 100}.round(2)}
 json[:ram] = result.map{|row| (row[2].reduce(0){|memo, ram| memo + ram} / row[2].length).round(2)}
 
-File.write('data/timeline.json', json.to_json)
+File.write('timeline.json', json.to_json)
 
 puts json.to_json
 

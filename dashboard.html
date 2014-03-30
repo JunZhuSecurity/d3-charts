@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>List of Apps</title>
+  <title>AS24 VM KPIs</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <script src="js/vendor/jquery-1.10.2.min.js"></script>
-  <script src="js/vendor/bootstrap.min.js"></script>
   <link rel="stylesheet" href="css/vendor/bootstrap.min.css">
   <link rel="stylesheet" href="s.autoscout/chart.css">
 
+  <script src="js/vendor/jquery-1.10.2.min.js"></script>
+  <script src="js/vendor/bootstrap.min.js"></script>
+  <script src="js/vendor/d3.min.js"></script>
   <style>
     .border-blue {border-style:solid; border-width:1px; border-color:lightblue}
     .border-green {border-style:solid; border-width:1px; border-color:lightgreen}
@@ -45,7 +45,7 @@
   <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">AS24 VM KPI Dashboard</a>
+        <a class="navbar-brand" href="#">AS24 VM Dashboard</a>
       </div>
       <div class="">
         <ul class="nav nav-pills">
@@ -66,7 +66,7 @@
     </div>
   </div>
 
-  <div class="container">
+  <div id="Groups" class="container">
 
     <div id="WEBABV" class="row">
       <div class="col-md-3">
@@ -129,56 +129,9 @@
       </div>
     </div>
 
-    <div class="row" style="background-color: seashell;">
-         <div id="WEBDEV" class="col-md-3 border-green">
-           <div class="vmgroup">WEBDEV</div>
-           <div class="swimlane">DE-Home, List</div>
-
-           <div>
-             <div class="kpi" style="" title="Peak usage last 10 days">
-            <div>CPU 45%</div>
-            <div style="font-size:20px; font-weight: bold;text-align:right ">4.2/598</div>
-          </div>
-          <div style="display:table-cell;width:5px"></div>
-          <div class="kpi" style=""><div>RAM 30%</div><div>3.4/16</div></div>
-        </div>
-           <div>Latency 23ms</div>
-           <table>
-             <thead>
-             <td>Env</td>
-             <td style="min-width:30px">VM</td>
-             <td>CPU</td>
-             <td>RAM</td>
-             </thead>
-             <tr>
-               <td>LIVE</td>
-               <td>8</td>
-               <td>8</td>
-               <td>16GB</td>
-             </tr>
-             <tr>
-               <td>REF</td>
-               <td>2</td>
-               <td>2</td>
-               <td>16GB</td>
-             </tr>
-             <tr>
-               <td>STABLE</td>
-               <td>2</td>
-               <td>2</td>
-               <td>16GB</td>
-             </tr>
-           </table>
-           <div style="font-size:18px;">Owner: DLM+DSM</div>
-         </div>
-         <div class="col-md-9 border-red">
-           Here comes the chart
-         </div>
-
-       </div>
-
 
 
   </div>
+  <script src="dashboard.js"></script>
 </body>
 </html>
