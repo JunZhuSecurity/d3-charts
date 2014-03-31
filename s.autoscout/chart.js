@@ -136,7 +136,6 @@
            .attr("height", 5);
     }
 
-
     // Main
     d3.json("timeline.json", function(error, json) {
         var format = d3.time.format("%Y-%m-%d %H:%M:%S");
