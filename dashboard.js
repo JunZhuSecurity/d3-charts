@@ -39,6 +39,14 @@ d3.json("dashboard.json", function(error, json) {
     append_kpi_space(row);
     append_kpi(row, "Net IO [MB/s]", function(d) {return kpi_io('Disk IO [MB/s]', d.net.read, d.net.write)});
 
+    var env_table = kpis.append("table").attr("class", "env");
+    var env = env_table.selectAll("tr").data(function(d){return d.env;}).enter();
+    env_table.append("tr").html("<td></td><td>VMs</td><td>CPUs</td><td>RAM [MiB]</td>");
+
+    env_row = env.append("tr");
+    for (var i = 0; i < 4; i += 1) {
+        env_row.append("td").text(function(d){return d[i];});
+    }
 
 });
 
