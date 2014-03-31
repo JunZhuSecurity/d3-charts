@@ -13,13 +13,11 @@
   <link rel="stylesheet" href="s.autoscout/chart.css">
 
   <style>
-    .border-blue {border-style:solid; border-width:1px; border-color:lightblue}
-    .border-green {border-style:solid; border-width:1px; border-color:lightgreen}
-    .border-red {border-style:solid; border-width:1px; border-color:lightcoral}
     .row {margin-bottom:18px; box-shadow:2px 2px 5px #d0d0d2; background-color: #f4f4f8; border-radius:5px;}
+    .container {width:1000px;}
 
     .swimlane {font-size:14px; text-align:right;}
-    .vmgroup {font-size:36px; margin-bottom:-8px}
+    .vmgroup {font-size:36px; font-weight: bold; margin-bottom:-8px}
 
     .kpi-row {display:table; width:100%; margin-top:4px;}
     .kpi {display:table-cell;
@@ -27,17 +25,18 @@
           border: 1px solid; border-radius:3px; padding:2px;
           width:49.5%}
     .kpi-space {display:table-cell; width:1%}
-    .kpi .title {text-align:center; font-size:12px; }
-    .kpi .value {text-align:right; font-size:20px; font-weight: bold; white-space: nowrap; margin-bottom:-3px}
-    .kpi .unit {font-size:10px;}
+    .kpi .title {font-size:12px; float:left; }
+    .kpi .sub-value {font-size:12px; font-weight: bold; float:right}
+    .kpi .value {text-align:right; font-size:20px; font-weight: bold; /*white-space: nowrap;*/ margin-bottom:-3px; clear:both;}
+    .kpi .unit {font-size:10px;font-weight: normal;}
 
     .env {margin-top: 10px; margin-bottom:5px; width:100%}
     .env td {padding:1px 3px; margin:5px;}
     .env td:nth-child(2) {width: 42px;}
-    .env td:nth-child(1n + 2) {border-left: 1px solid #bbb; text-align:right;}
-    .env tr:nth-child(1n + 2) {border-top: 1px solid #bbb; font-weight:bold;}
-    .env tr:nth-child(1) td {font-size:12px; color: #888;  text-align:center;}
-    .env td:nth-child(1) {font-size:12px; color: #888; font-weight:normal;text-align:center;}
+    .env td:nth-child(1n + 2) {border-left: 1px solid #999; text-align:right;}
+    .env tr:nth-child(1n + 2) {border-top: 1px solid #999; font-weight:bold;}
+    .env tr:nth-child(1) td {font-size:12px; color: #555;  text-align:center;}
+    .env td:nth-child(1) {font-size:12px; color: #555; font-weight:normal;text-align:center;}
   </style>
 
 </head>
@@ -68,35 +67,37 @@
 
   <div class="container">
 
-    <div id="WEBABV" class="row">
+    <div id="WEBAB" class="row">
       <div class="col-md-3">
-        <div class="vmgroup">WEBABV</div>
+        <div class="vmgroup">WEBAB</div>
         <div class="swimlane">crodemeyer: MyArea</div>
 
         <div class="kpi-row">
           <div class="kpi" title="Peak usage last 10 days">
-            <div class="title pull-left">45%</div>
+            <div class="sub-value">13%</div>
             <div class="title">CPU</div>
             <div class="value">14.2/598</div>
           </div>
           <div class="kpi-space"></div>
           <div class="kpi">
+            <div class="sub-value">35%</div>
             <div class="title">RAM [GiB]</div>
-            <div class="value">3.4/16</div>
+            <div class="value " >3.4/16</div>
           </div>
         </div>
 
         <div class="kpi-row">
           <div class="kpi">
             <div class="title">Disk IO [MB/s]</div>
-            <div class="value pull-left">45.1</div>
-            <div class="value pull-right">6.9</div>
+            <div class="value">34 - 6.9 7.8 asdf </div>
           </div>
           <div class="kpi-space"></div>
-          <div class="kpi">
-            <div class="title">Net IO [MB/s]</div>
-            <div class="value pull-left"><span class="unit">R</span>23.3</div>
-            <div class="value pull-right" title="Transmit"><span class="unit">W</span>45.7</div>
+          <div class="kpi" style="height: 100px;">
+              <div class="title">Net IO [MB/s]</div>
+              <span>a     asdfasdf asdfas asd </span>
+
+            <!--<div class="value pull-left"><span class="unit">R</span>23.3</div>-->
+            <!--<div class="value pull-right" title="Transmit"><span class="unit">W</span>45.7</div>-->
           </div>
         </div>
 
@@ -133,8 +134,8 @@
     </div>
 
     <div class="row" style="background-color: seashell;">
-         <div id="WEBDEV" class="col-md-3 border-green">
-           <div class="vmgroup">WEBDEV</div>
+         <div id="WEBDE" class="col-md-3 border-green">
+           <div class="vmgroup">WEBDE</div>
            <div class="swimlane">DE-Home, List</div>
 
            <div>
