@@ -27,8 +27,8 @@ $live = ($live | ?{-not ($_.Name -eq "LCDNCSV002")}) # LCDNCSV002 seems to be de
 
 Write-Host "Get Live Stats"
 $stats = @{}
-$counters = "cpu.usage.average", "mem.active.average", "net.received.average", "net.transmitted.average", "disk.read.average", "disk.write.average"
-$live | ForEach{$stats[$_.Name] = get-stat $_ -stat $counters -start (get-date).AddDays(-2) -finish (get-date).AddHours(-1)}
+$counters = "cpu.usage.average", "cpu.usage.average", "mem.active.average", "mem.active.maximum", "net.received.average", "net.transmitted.average", "disk.read.average", "disk.write.average"
+$live | ForEach{$stats[$_.Name] = get-stat $_ -stat $counters -start (get-date).AddHours(-36) -finish (get-date).AddHours(-1)}
 
 Write-Host "Write Live Stats"
 $stats.GetEnumerator() | ForEach{$_.Value | ?{!$_.Instance} | Select-Object -Property MetricID,TimeStamp,Value | Export-Csv "$($_.Name).csv" -Encoding UTF8 -NoTypeInformation}

@@ -37,7 +37,7 @@ result = result.reduce([]){|memo, row| row.nil? ? memo : (memo << row)}
 cpu_per_vm = 2
 json = {}
 
-json[:time] = result.map{|row| row[0].sub(/ \+0100$/, '')}
+json[:time] = result.map{|row| row[0].sub(/ \+0\d00$/, '')}
 json[:cpu] = result.map{|row| row[1].reduce(0){|memo, cpu| memo + cpu_per_vm * (cpu ? cpu : 0) / 100}.round(2)}
 json[:ram] = result.map{|row| (row[2].reduce(0){|memo, ram| memo + ram} / row[2].length).round(2)}
 

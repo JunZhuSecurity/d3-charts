@@ -1,7 +1,7 @@
 (function(){
 
     var margin = {top: 20, right: 30, bottom: 30, left: 40};
-    var width = 1024 - margin.left - margin.right;
+    var width = 1400 - margin.left - margin.right;
     var height = 300 - margin.top - margin.bottom;
 
     function createAxis(chart, scaleX, scaleY) {
@@ -66,7 +66,7 @@
 
     function createMemoryChart(data) {
 
-        var width = 1024 - margin.left - margin.right;
+        var width = 1400 - margin.left - margin.right;
         var height = 200 - margin.top - margin.bottom;
 
         var scaleX = d3.time.scale()
