@@ -46,13 +46,12 @@ def aggregate(data, start, interval, agg)
       if acc.size > 0
         result << agg.call(acc) # aggregate average
         acc = []
-      elsif result.size > 0
-        result << result.last
       else
-        raise 'Not data found'
+        result << result.last || 0
       end
       start = stop
       stop = start + interval
+      acc << item[1].to_f if item[0] < stop
     end
   end
   if acc.size > 0
@@ -75,9 +74,10 @@ def aggregate_machine(date, machine)
 
   output = File.join(root, 'stats', machine + '.csv')
   if File.size?(output)
-     #File.readlines(output).last.split(',')[0]
+     start = Time.parse(File.readlines(output).last.split(',')[0])
   else
     File.write(output, '')
+    start = Time.parse(date) - 24 * 3600
   end
 
   input = File.join(root, date, machine + '.csv')
@@ -85,16 +85,28 @@ def aggregate_machine(date, machine)
     stats[row[0]] << [Time.parse(row[1]), row[2].to_f]
   end
 
-  stats.each do |item|
-    item[1] = aggregate_avg(item[1], start, INTERVAL)
-    puts item.size
+  stats.each do |key, data|
+    if key =~ /maximum/
+      stats[key] = aggregate_max(data, start, INTERVAL)
+    else
+      stats[key] = aggregate_avg(data, start, INTERVAL)
+    end
   end
 
-  #if stats.keys.size > 0
-  #  File.open(output, 'a+') do |file|
-  #    file.puts
-  #  end
-  #end
+  if stats.keys.size > 0
+    File.open(output, 'a+') do |file|
+      stats.values.first.size.times do |i|
+        row = [start]
+        METRIC[1..-1].each {|metric| row << (stats[metric][i] || 0)}
+        puts row.inspect
+
+        #file.puts
+
+
+        start += INTERVAL
+      end
+    end
+  end
 
 end
 
@@ -102,7 +114,14 @@ aggregate_machine('2014-04-01', 'LADMADK001')
 
 #start = Time.parse('2014-03-31 08:00:00') + 3600
 #puts start
-#data = stats[METRIC[S_DISK_IN]].sort_by{|item| item[0]}.select{|item| item[0] >= start}
+#
+#stats = Hash.new{|hash, key| hash[key] = []}
+#input = File.join(__dir__, 'data', '2014-04-01', 'LADMADK001' + '.csv')
+#CSV.read(input, 'r:bom|utf-8').drop(1).each do |row|
+#  stats[row[0]] << [Time.parse(row[1]), row[2].to_f]
+#end
+#
+#data = stats[METRIC[1]].sort_by{|item| item[0]}.select{|item| item[0] >= start}
 #puts data.take(8).inspect
-#puts aggregate_avg(stats[METRIC[S_DISK_IN]], start, INTERVAL).take(4).inspect
-
+#puts aggregate_avg(stats[METRIC[1]], start, INTERVAL).take(4).inspect
+#
