@@ -1,6 +1,6 @@
 {
     "start": "2014-03-29",
-    "vm":{"count": 2000, "cpu_count": 2000, "ram_gb": 19105},
+    "total": {"time": "2014-03-29", "count": 2000, "cpu": 2000, "ram": 19105},
     "groups": [
         {
             "group": "WEBAB",
@@ -8,15 +8,16 @@
             "owner": "DLM+DSM",
             "env": [["LIVE", 8, 8, 16384],["REF"],["KFALL"]],
             "cpu": {"used": 4.2, "total": 142, "data": [[1234, 4.5]]},
-            "ram": {"used": 3,"total": 4},
-            "disk": {"read": 47,"write": 48},
+            "ram": {"used": 3,"total": 4}, //GiB
+            "disk": {"read": 47,"write": 48}, //MB/s
             "net": {}
         },
         {
             "group": "CDNSC",
             "name":null,
-
-            "env": [["LIVE", "12(4)", 8, 16384], ["REF", 2, 2, 4096], ["STABLE", 2, 2, 4096], ["CI", 2, 2, 4096]],
+            "owner" : "crodemeyer",
+            "storage" : 47.5, // GiB
+            "env": [["LIVE", "12-4", 8, 16384], ["REF", 2, 2, 4096], ["STABLE", 2, 2, 4096], ["CI", 2, 2, 4096]],
             "cpu": {"used": 4.2,"total": 142,"data": [[1234, 4.5]]},
             "ram": {"used": 3,"total": 4},
             "disk": {"read": 47, "write": 48},

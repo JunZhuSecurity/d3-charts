@@ -1,4 +1,4 @@
-d3.json("dashboard.json", function(error, json) {
+d3.json("data/dashboard.json", function(error, json) {
 
     function append_kpi(row, tip, html) {
         row.append("div").attr("class", "kpi").attr("title", "Peak " + tip + " usage last 10 days").html(html);
