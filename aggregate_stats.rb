@@ -68,13 +68,13 @@ def aggregate_max(data, start, interval)
   aggregate(data, start, interval, lambda{|acc| acc.max})
 end
 
-def aggregate_machine(date, machine)
+def aggregate_machine(machine)
   root = File.join(__dir__, 'data')
   stats = Hash.new{|hash, key| hash[key] = []}
 
-  output = File.join(root, 'stats', machine + '.csv')
+  output = File.join(root, 'stats', File.basename(machine))
   if File.size?(output)
-     start = Time.parse(File.readlines(output).last.split(',')[0])
+     start = Time.parse(File.readlines(output).last.split(',')[0]) + INTERVAL
   else
     File.write(output, '')
     start = Time.parse(date) - 24 * 3600
@@ -99,9 +99,7 @@ def aggregate_machine(date, machine)
         row = [start]
         METRIC[1..-1].each {|metric| row << (stats[metric][i] || 0)}
         puts row.inspect
-
-        #file.puts
-
+        file.puts row.join(',')
 
         start += INTERVAL
       end
@@ -110,7 +108,24 @@ def aggregate_machine(date, machine)
 
 end
 
-aggregate_machine('2014-04-01', 'LADMADK001')
+if $0 == __FILE__
+
+  root = File.join(__dir__, 'data')
+  folders = Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /\d{4}-\d{2}-\d{2}$/}
+  folders.sort.each do |folder|
+
+    Dir.glob(File.join(folder, 'L*.csv')) do |file|
+      puts file
+    end
+
+
+  end
+
+  #aggregate_machine('2014-03-28', 'LADMADK001')
+  #aggregate_machine('2014-03-29', 'LADMADK001')
+  #aggregate_machine('2014-03-30', 'LADMADK001')
+  #aggregate_machine('2014-03-31', 'LADMADK001')
+  #aggregate_machine('2014-04-01', 'LADMADK001')
 
 #start = Time.parse('2014-03-31 08:00:00') + 3600
 #puts start
@@ -125,3 +140,5 @@ aggregate_machine('2014-04-01', 'LADMADK001')
 #puts data.take(8).inspect
 #puts aggregate_avg(stats[METRIC[1]], start, INTERVAL).take(4).inspect
 #
+
+end

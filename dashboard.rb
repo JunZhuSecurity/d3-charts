@@ -3,6 +3,8 @@ require 'json'
 require 'csv'
 require 'FileUtils'
 
+require_relative 'aggregate_stats'
+
 # indices in vms.csv
 VM_NAME = 0
 VM_CPU = 1
