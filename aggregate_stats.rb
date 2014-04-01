@@ -76,12 +76,14 @@ def aggregate_machine(input)
     stats[row[0]] << [Time.parse(row[1]), row[2].to_f]
   end
 
-  output = File.join(File.dirname(input), '../stats', File.basename(machine))
+  return if stats.size == 0
+
+  output = File.join(File.dirname(input), '../stats', File.basename(input))
   if File.size?(output)
      start = Time.parse(File.readlines(output).last.split(',')[0]) + INTERVAL
   else
     File.write(output, '')
-    start = stats.values[0][0]
+    start = stats.values.first[0][0]
   end
 
   stats.each do |key, data|
