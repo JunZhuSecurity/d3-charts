@@ -68,21 +68,20 @@ def aggregate_max(data, start, interval)
   aggregate(data, start, interval, lambda{|acc| acc.max})
 end
 
-def aggregate_machine(machine)
-  root = File.join(__dir__, 'data')
-  stats = Hash.new{|hash, key| hash[key] = []}
+def aggregate_machine(input)
+  puts "Aggregating #{input}"
 
-  output = File.join(root, 'stats', File.basename(machine))
+  stats = Hash.new{|hash, key| hash[key] = []}
+  CSV.read(input, 'r:bom|utf-8').drop(1).each do |row|
+    stats[row[0]] << [Time.parse(row[1]), row[2].to_f]
+  end
+
+  output = File.join(File.dirname(input), '../stats', File.basename(machine))
   if File.size?(output)
      start = Time.parse(File.readlines(output).last.split(',')[0]) + INTERVAL
   else
     File.write(output, '')
-    start = Time.parse(date) - 24 * 3600
-  end
-
-  input = File.join(root, date, machine + '.csv')
-  CSV.read(input, 'r:bom|utf-8').drop(1).each do |row|
-    stats[row[0]] << [Time.parse(row[1]), row[2].to_f]
+    start = stats.values[0][0]
   end
 
   stats.each do |key, data|
@@ -98,9 +97,7 @@ def aggregate_machine(machine)
       stats.values.first.size.times do |i|
         row = [start]
         METRIC[1..-1].each {|metric| row << (stats[metric][i] || 0)}
-        puts row.inspect
         file.puts row.join(',')
-
         start += INTERVAL
       end
     end
@@ -108,17 +105,20 @@ def aggregate_machine(machine)
 
 end
 
+def aggregate_folder(folder)
+  Dir.glob(File.join(folder, 'L*.csv')) do |file|
+    aggregate_machine(file)
+  end
+end
+
+
 if $0 == __FILE__
 
   root = File.join(__dir__, 'data')
+
   folders = Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /\d{4}-\d{2}-\d{2}$/}
   folders.sort.each do |folder|
-
-    Dir.glob(File.join(folder, 'L*.csv')) do |file|
-      puts file
-    end
-
-
+    aggregate_folder(folder)
   end
 
   #aggregate_machine('2014-03-28', 'LADMADK001')
