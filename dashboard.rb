@@ -162,7 +162,7 @@ data = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}
 data = data.last
 
 # go back 10 days and round to INTERVAL
-start = Time.now - 3 * 24 * 60 * 60
+start = Time.now - 5 * 24 * 60 * 60
 start = start - start.to_i % (INTERVAL)
 puts start
 

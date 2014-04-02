@@ -24,8 +24,9 @@ d3.json("dashboard.json", function(error, json) {
     function cpu_chart(chart) {
         var margin = {top: 20, right: 30, bottom: 30, left: 40};
         var width = 720 - margin.left - margin.right;
-        var height = 285 - margin.top - margin.bottom;
+        var height = 290 - margin.top - margin.bottom;
 
+        // shared X-Axis
         var scaleX = d3.time.scale.utc()
             .domain([json.start, json.stop]).range([0, width]);
 
@@ -34,7 +35,6 @@ d3.json("dashboard.json", function(error, json) {
         chart = chart.append('svg:svg')
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-            .attr("style", "background:lightblue")
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -45,7 +45,7 @@ d3.json("dashboard.json", function(error, json) {
 
         // attach scaleY
         json.groups.forEach(function(group){
-            group.cpu.scaleY = d3.scale.linear().domain([0, Math.round(+group.cpu.used + 1)]).range([height, 0]);
+            group.cpu.scaleY = d3.scale.linear().domain([0, Math.round(+group.cpu.used + 0.6)]).range([height, 0]);
         });
 
         function yAxisGenerator(selection) {
@@ -65,22 +65,26 @@ d3.json("dashboard.json", function(error, json) {
 
         var line = d3.svg.line()
             .interpolate("basis")
-            .x(function(d, i) {
-                return scaleX(data.time[i]); })
-            .y(function(d) {
-                return d.cpu.scaleY(d); });
+            .x(function(d, i) {return scaleX(json.start + json.interval * i); });
 
+        function cpu_line_generator(group) {
+            line.y(function(d){return group.cpu.scaleY(d);});
+            return line(group.cpu.data);
+        }
 
         chart.append("path")
-            .datum(data.ram)
-            .attr("class", "ram-line")
-            .attr("d", line);
-
+             .attr("class", "cpu-line")
+             .attr("d", cpu_line_generator);
     }
 
     var time_format = d3.time.format("%Y-%m-%d %H:%M:%S %Z");
     json.start = +time_format.parse(json.start);
     json.stop = +time_format.parse(json.stop);
+    json.interval = json.interval * 1000;
+
+    console.log(json.start);
+    console.log(json.stop);
+    console.log(json.interval);
 
     var groups = d3.select("#Groups").selectAll("div.row").data(json.groups).enter();
 
@@ -108,13 +112,8 @@ d3.json("dashboard.json", function(error, json) {
         env_row.append("td").text(function(d){return d[i];});
     }
 
-
     var chart = group.append("div").attr("class", "col-md-9");
-
     cpu_chart(chart);
-    //chart.append("svg").attr("width", "720px").attr("height", "285px").attr("style", "background:lightblue")
-    //cpu_chart()
-
 
 });
 
