@@ -121,6 +121,12 @@ def aggregate_all(root)
 end
 
 def get_stats(file, start)
+
+  #TODO: Perhaps we need normalization if there are missing entries
+  # - at the beginning  => can if happen if new machines are created
+  # - in the middle  => should not happen because
+  # - at the end     => should not happen because of powershell export, but maybe if machines are deleted
+
   result = []
   if File.exists?(file)
     File.readlines(file).each do |line|
