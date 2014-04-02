@@ -134,9 +134,9 @@ def get_stats(file, start)
        if time > start
          line = line.split(',')
          line[0] = time
-         for i in 1..line.size-1
-           line[i] = line[i].to_f
-         end
+         (1..line.size-1).each{|i| line[i] = line[i].to_f}
+         line[S_RAM_AVG] /= 1024 * 1024
+         line[S_RAM_MAX] /= 1024 * 1024
          result << line
        end
     end
@@ -153,7 +153,7 @@ if $0 == __FILE__
 
   start = Time.now - 1 * 24 * 60 * 60
   start = start - start.to_i % (INTERVAL)
-  puts get_stats(File.join(root, 'stats/LCDNCPK003.csv'), start).last[S_DISK_OUT]
+  puts get_stats(File.join(root, 'stats/LELAVMV004.csv'), start).inspect
 
 
 #start = Time.parse('2014-03-31 08:00:00') + 3600

@@ -30,7 +30,7 @@ def get_vms(folder)
   vms.map do |vm|
     vm[VM_NAME].upcase!
     vm[VM_CPU] = vm[VM_CPU].to_i
-    vm[VM_RAM] = vm[VM_RAM].to_f
+    vm[VM_RAM] = vm[VM_RAM].to_f / 1024
     vm[VM_SPACE] = vm[VM_SPACE].to_f
   end
   vms
@@ -41,18 +41,18 @@ def select_env_vms(env, vms)
   vms.select{|vm| vm[VM_NAME] =~ env_pattern}
 end
 
-def get_cpu(vms)
+def get_cpu(vms, stats)
   {
-      used: nil,
+      used: stats.cpu_peak_usage,
       total: vms.reduce(0){|cpu, vm| cpu + vm[VM_CPU]},
       data: []
   }
 end
 
-def get_ram(vms)
+def get_ram(vms, stats)
   {
-    used: nil,
-    total: vms.reduce(0){|ram, vm| ram + vm[VM_RAM]} / vms.count / 1024
+    used: stats.ram_peak_usage,
+    total: vms.reduce(0){|ram, vm| ram + vm[VM_RAM]} / vms.count
   }
 end
 
@@ -73,10 +73,10 @@ def get_env(environments)
     end
     if count > 0
       cpu = (cpu / count).round(1)
-      ram = (ram / count / 1024).round(1)
+      ram = (ram / count).round(1)
       if key == :live && kcount > 0
         kcpu = (kcpu / kcount).round(1)
-        kram = (kram / kcount / 1024).round(1)
+        kram = (kram / kcount).round(1)
         count = "#{count}-#{environments[:kfall].size}"
         cpu = "#{'%g' % cpu}(#{'%g' % kcpu})" if cpu != kcpu
         ram = "#{'%g' % ram}(#{'%g' % kram})" if ram != kram
@@ -87,22 +87,37 @@ def get_env(environments)
   result
 end
 
-def calc_stats(folder, vms, start)
-  folder = FileUtils.chdir(File.join(__dir__, 'data')) unless folder
+class GroupStats
 
-  stats = []
-  vms.each do |vm|
-    vm_stats = get_stats(File.join(folder, 'stats', vm[VM_NAME] + '.csv'), start)
-    vm_stats.each_with_index do |item, i|
-      stats[i] = [item[0], 0, 0, 0, 0, 0, 0, 0, 0] unless stats[i]
+  def initialize(folder, vms, start)
+    folder = FileUtils.chdir(File.join(__dir__, 'data')) unless folder
 
-      stats[i][S_CPU_AVG] += item[S_CPU_AVG] * vm[VM_CPU]
-      stats[i][S_CPU_MAX] += item[S_CPU_MAX] * vm[VM_CPU]
-      stats[i][S_RAM_AVG] += item[S_RAM_AVG]
-      stats[i][S_RAM_MAX] = item[S_RAM_MAX] if item[S_RAM_MAX] > stats[i][S_RAM_MAX]
-      S_NET_IN.upto(S_DISK_OUT){|n| stats[i][n] += item[n]}
+    @stats = []
+    vms.each do |vm|
+      vm_stats = get_stats(File.join(folder, 'stats', vm[VM_NAME] + '.csv'), start)
+      S_CPU_AVG.upto(S_DISK_OUT){|s| @stats[s] = Array.new(vm_stats.size, 0)} unless @stats.size > 0
+      vm_stats.each_with_index do |item, i|
+        if i < @stats[1].size  # Hack in case different stats counts
+          @stats[S_CPU_AVG][i] += item[S_CPU_AVG] * vm[VM_CPU] / 100
+          @stats[S_CPU_MAX][i] += item[S_CPU_MAX] * vm[VM_CPU] / 100
+          @stats[S_RAM_AVG][i] = item[S_RAM_AVG] if item[S_RAM_AVG] > @stats[S_RAM_AVG][i]
+          @stats[S_RAM_MAX][i] = item[S_RAM_MAX] if item[S_RAM_MAX] > @stats[S_RAM_MAX][i]
+          S_NET_IN.upto(S_DISK_OUT){|s| @stats[s][i] += item[s]}
+        end
+      end
     end
+    #@stats[S_RAM_AVG].each_index{|i| @stats[S_RAM_AVG][i] /= vms.size}
   end
+
+  def cpu_peak_usage
+    #puts @stats.inspect  if  @stats[S_CPU_AVG].max.nil?
+    (@stats[S_CPU_AVG].max || 0).round(1)
+  end
+
+  def ram_peak_usage
+    (@stats[S_RAM_AVG].max || 0).round(1)
+  end
+
 end
 
 json = {}
@@ -118,11 +133,12 @@ puts start
 
 # read data from both v-centers
 vms = get_vms(data)
+#vms = vms.select{|vm| vm[VM_NAME] =~ /LELAVM/i}
 
 json[:total] = {
     count: vms.size,
     cpu: vms.reduce(0){|count, vm| count + vm[VM_CPU]},
-    ram: vms.reduce(0){|count, vm| count + vm[VM_RAM]} / 1024
+    ram: vms.reduce(0){|count, vm| count + vm[VM_RAM]}
 }
 
 # cluster vms by naming convention
@@ -130,7 +146,7 @@ json[:total] = {
 groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
             .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ /^L/i } && group[1].size > 1}
 
-groups = groups[0..15]
+#groups = groups[0..15]
 
 
 json[:groups] = groups.map do |group, gvms|
@@ -138,7 +154,7 @@ json[:groups] = groups.map do |group, gvms|
   ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
   live = env[:live]
 
-  calc_stats('.', live, start)
+  stats = GroupStats.new('.', live, start)
 
   owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| -item[1].size}.first[0]
   owner = 'unknown' if owner == ''
@@ -146,8 +162,8 @@ json[:groups] = groups.map do |group, gvms|
       group: group,
       owner: owner,
       name: 'nyi',
-      cpu: get_cpu(live),
-      ram: get_ram(live),
+      cpu: get_cpu(live, stats),
+      ram: get_ram(live, stats),
       disk: {read: 0, write:0},
       net: {read:0, write:0},
       env: get_env(env)

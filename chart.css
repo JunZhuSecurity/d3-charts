@@ -1,0 +1,38 @@
+
+.axis text {
+  font: 11px Verdana;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.marker-line
+{
+    fill: none;
+    stroke: red;
+    stroke-width: 1px;
+}
+
+.cpu-line {
+  fill: none;
+  stroke: hsl(132, 100%, 25%);
+  stroke-width: 1.5px;
+}
+
+.ram-line {
+  fill: none;
+  stroke: hsl(220, 100%, 25%);
+  stroke-width: 1.5px;
+}
+
+.cpu {
+    fill: green;
+    stroke: none;
+    stroke-width: 0px;
+    shape-rendering: crispEdges;
+}
+
