@@ -79,12 +79,27 @@ def get_env(environments)
   result
 end
 
+def calc_stats(folder, vms, start)
+  folder = FileUtils.chdir(File.join(__dir__, 'data')) unless folder
+
+  vms.each do |vm|
+    stats = get_stats(File.join(folder, 'stats', vm[VM_NAME] + '.csv'), start)
+
+    puts "#{vm[VM_NAME]} #{stats.size}"
+  end
+end
 
 json = {}
 FileUtils.chdir(File.join(__dir__, 'data'))
 
 data = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}.sort
 data = data.last
+
+# go back 10 days and round to INTERVAL
+start = Time.now - 3 * 24 * 60 * 60
+start = start - start.to_i % (INTERVAL)
+puts start
+
 
 # read data from both v-centers
 vms = get_vms(data)
@@ -97,14 +112,19 @@ json[:total] = {
 
 # cluster vms by naming convention
 # a group is detected if there are at least two servers where one is an live server
-
 groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
             .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ /^L/i } && group[1].size > 1}
+
+#groups = groups[0..5]
+
 
 json[:groups] = groups.map do |group, gvms|
   env = {}
   ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
   live = env[:live]
+
+  calc_stats('.', live, start)
+
   owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| -item[1].size}.first[0]
   owner = 'unknown' if owner == ''
   {
@@ -119,8 +139,6 @@ json[:groups] = groups.map do |group, gvms|
   }
 end
 
+
 json[:groups].sort_by!{|group| -group[:cpu][:total]}
-
-puts groups[0].inspect
-
 File.write(File.join(__dir__, 'data', 'dashboard.json'), json.to_json)

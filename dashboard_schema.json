@@ -18,7 +18,7 @@
             "owner" : "crodemeyer",
             "storage" : 47.5, // GiB
             "env": [["LIVE", "12-4", 8, 16384], ["REF", 2, 2, 4096], ["STABLE", 2, 2, 4096], ["CI", 2, 2, 4096]],
-            "cpu": {"used": 4.2,"total": 142,"data": [[1234, 4.5]]},
+            "cpu": {"used": 4.2,"total": 142, "data": [[1234, 4.5]]},
             "ram": {"used": 3,"total": 4},
             "disk": {"read": 47, "write": 48},
             "net": {"read": 3.4, "write": 97.4}

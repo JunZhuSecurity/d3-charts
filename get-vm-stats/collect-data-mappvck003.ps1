@@ -1,7 +1,7 @@
 ﻿Add-PSSnapin VMware.VimAutomation.Core
 Add-PSSnapin VMware.VimAutomation.Vds
 
-#Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -DefaultVIServerMode Single 
+#Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -DefaultVIServerMode Single
 
 $vis = "mappvck003" #KFall
 $cred = Import-Clixml s:\vmware\management.cred
@@ -22,13 +22,15 @@ Select-Object -Property Name,NumCpu,MemoryMB,usedSpaceGB,@{Name="HostName"; Expr
 export-csv "vms_$vis.csv" -Encoding UTF8 -NoTypeInformation
 
 Write-Host "Get Live VMs"
-$live = ($vm | ?{$_.Name.StartsWith("L")})
+$live = ($vm | ?{$_.Name.ToUpper().StartsWith("L")})
 $live = ($live | ?{-not ($_.Name -eq "LCDNCSV002")}) # LCDNCSV002 seems to be defect???
 
 Write-Host "Get Live Stats"
 $stats = @{}
-$counters = "cpu.usage.average", "cpu.usage.average", "mem.active.average", "mem.active.maximum", "net.received.average", "net.transmitted.average", "disk.read.average", "disk.write.average"
-$live | ForEach{$stats[$_.Name] = get-stat $_ -stat $counters -start (get-date).AddHours(-36) -finish (get-date).AddHours(-1)}
+$start = (get-date).AddHours(-36)
+$finish = (get-date).AddHours(-1)
+$counters = "cpu.usage.average", "cpu.usage.maximum", "mem.active.average", "mem.active.maximum", "net.received.average", "net.transmitted.average", "disk.read.average", "disk.write.average"
+$live | ForEach{$stats[$_.Name] = get-stat $_ -stat $counters -start $start -finish $finish}
 
 Write-Host "Write Live Stats"
-$stats.GetEnumerator() | ForEach{$_.Value | ?{!$_.Instance} | Select-Object -Property MetricID,TimeStamp,Value | Export-Csv "$($_.Name).csv" -Encoding UTF8 -NoTypeInformation}
+$stats.GetEnumerator() | ForEach{$_.Value | ?{!$_.Instance} | Select-Object -Property MetricID,TimeStamp,Value | Export-Csv "$($_.Name.ToUpper()).csv" -Encoding UTF8 -NoTypeInformation}

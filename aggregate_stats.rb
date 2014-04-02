@@ -113,21 +113,42 @@ def aggregate_folder(folder)
   end
 end
 
-
-if $0 == __FILE__
-
-  root = File.join(__dir__, 'data')
-
+def aggregate_all(root)
   folders = Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /\d{4}-\d{2}-\d{2}$/}
   folders.sort.each do |folder|
     aggregate_folder(folder)
   end
+end
 
-  #aggregate_machine('2014-03-28', 'LADMADK001')
-  #aggregate_machine('2014-03-29', 'LADMADK001')
-  #aggregate_machine('2014-03-30', 'LADMADK001')
-  #aggregate_machine('2014-03-31', 'LADMADK001')
-  #aggregate_machine('2014-04-01', 'LADMADK001')
+def get_stats(file, start)
+  result = []
+  if File.exists?(file)
+    File.readlines(file).each do |line|
+      time = Time.parse(line)
+       if time > start
+         line = line.split(',')
+         line[0] = time
+         for i in 1..line.size-1
+           line[i] = line[i].to_f
+         end
+         result << line
+       end
+    end
+  end
+  result
+end
+
+
+if $0 == __FILE__
+
+  root = File.join(__dir__, 'data')
+  #aggregate_folder(File.join(root, '2014-04-02'))
+  #aggregate_all(root)
+
+  start = Time.now - 1 * 24 * 60 * 60
+  start = start - start.to_i % (INTERVAL)
+  puts get_stats(File.join(root, 'stats/LCDNCPK003.csv'), start).last[S_DISK_OUT]
+
 
 #start = Time.parse('2014-03-31 08:00:00') + 3600
 #puts start
