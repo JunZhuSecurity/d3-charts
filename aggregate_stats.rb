@@ -133,10 +133,18 @@ def get_stats(file, start)
       time = Time.parse(line)
        if time > start
          line = line.split(',')
-         line[0] = time
-         (1..line.size-1).each{|i| line[i] = line[i].to_f}
-         line[S_RAM_AVG] /= 1024 * 1024
-         line[S_RAM_MAX] /= 1024 * 1024
+         line[S_TIME] = time
+         #(1..line.size-1).each{|i| line[i] = line[i].to_f}
+
+         line[S_CPU_AVG] = line[S_CPU_AVG].to_f
+         line[S_CPU_MAX] = line[S_CPU_MAX].to_f
+         line[S_RAM_AVG] = line[S_RAM_AVG].to_f / (1024 * 1024)
+         line[S_RAM_MAX] = line[S_RAM_MAX].to_f / (1024 * 1024)
+         line[S_NET_IN] = line[S_NET_IN].to_f / 1024
+         line[S_NET_OUT] = line[S_NET_OUT].to_f / 1024
+         line[S_DISK_IN] = line[S_DISK_IN].to_f / 1024
+         line[S_DISK_OUT] = line[S_DISK_OUT].to_f / 1024
+
          result << line
        end
     end

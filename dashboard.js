@@ -21,6 +21,67 @@ d3.json("dashboard.json", function(error, json) {
                '<div class="value">' + write + '<span class="read">' + read + '</span></div>';
     }
 
+    function cpu_chart(chart) {
+        var margin = {top: 20, right: 30, bottom: 30, left: 40};
+        var width = 720 - margin.left - margin.right;
+        var height = 285 - margin.top - margin.bottom;
+
+        var scaleX = d3.time.scale.utc()
+            .domain([json.start, json.stop]).range([0, width]);
+
+        var xAxis = d3.svg.axis().scale(scaleX).orient("bottom");
+
+        chart = chart.append('svg:svg')
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("style", "background:lightblue")
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        chart.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0, " + height + ")")
+            .call(xAxis);
+
+        // attach scaleY
+        json.groups.forEach(function(group){
+            group.cpu.scaleY = d3.scale.linear().domain([0, Math.round(+group.cpu.used + 1)]).range([height, 0]);
+        });
+
+        function yAxisGenerator(selection) {
+            selection.each(function (d){
+                var yAxis = d3.svg.axis().scale(d.cpu.scaleY).orient("left");
+                d3.select(this).call(yAxis)
+            });
+        }
+
+        chart.append("g").attr("class", "y axis").call(yAxisGenerator)
+            .append("text").text("Used #CPU").attr("class", "label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 16)
+            .style("text-anchor", "end");
+
+        // Now we attach the path
+
+        var line = d3.svg.line()
+            .interpolate("basis")
+            .x(function(d, i) {
+                return scaleX(data.time[i]); })
+            .y(function(d) {
+                return d.cpu.scaleY(d); });
+
+
+        chart.append("path")
+            .datum(data.ram)
+            .attr("class", "ram-line")
+            .attr("d", line);
+
+    }
+
+    var time_format = d3.time.format("%Y-%m-%d %H:%M:%S %Z");
+    json.start = +time_format.parse(json.start);
+    json.stop = +time_format.parse(json.stop);
+
     var groups = d3.select("#Groups").selectAll("div.row").data(json.groups).enter();
 
     var group = groups.append("div").attr("class", "row").attr("id", function(d){return d.group;});
@@ -46,6 +107,14 @@ d3.json("dashboard.json", function(error, json) {
     for (var i = 0; i < 4; i += 1) {
         env_row.append("td").text(function(d){return d[i];});
     }
+
+
+    var chart = group.append("div").attr("class", "col-md-9");
+
+    cpu_chart(chart);
+    //chart.append("svg").attr("width", "720px").attr("height", "285px").attr("style", "background:lightblue")
+    //cpu_chart()
+
 
 });
 

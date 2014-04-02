@@ -7,7 +7,7 @@
             "name": "MyArea",
             "owner": "DLM+DSM",
             "env": [["LIVE", 8, 8, 16384],["REF"],["KFALL"]],
-            "cpu": {"used": 4.2, "total": 142, "data": [[1234, 4.5]]},
+            "cpu": {"used": 4.2, "total": 142, "data": [1234, 4.5]},
             "ram": {"used": 3,"total": 4}, //GiB
             "disk": {"read": 47,"write": 48}, //MB/s
             "net": {}
