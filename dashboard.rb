@@ -52,7 +52,7 @@ end
 def get_ram(vms, stats)
   {
     used: stats.ram_peak_usage,
-    total: vms.reduce(0){|ram, vm| ram + vm[VM_RAM]} / vms.count
+    total: (vms.reduce(0){|ram, vm| ram + vm[VM_RAM]} / vms.count).round(1)
   }
 end
 
@@ -77,7 +77,7 @@ def get_env(environments)
       if key == :live && kcount > 0
         kcpu = (kcpu / kcount).round(1)
         kram = (kram / kcount).round(1)
-        count = "#{count}-#{environments[:kfall].size}"
+        count = "#{count + kcount}-#{environments[:kfall].size}"
         cpu = "#{'%g' % cpu}(#{'%g' % kcpu})" if cpu != kcpu
         ram = "#{'%g' % ram}(#{'%g' % kram})" if ram != kram
       end
@@ -118,6 +118,17 @@ class GroupStats
     (@stats[S_RAM_AVG].max || 0).round(1)
   end
 
+end
+
+def release
+  FileUtils.chdir(__dir__)
+  target = '//dapptov001/s$/apps/d3-charts'
+
+  FileUtils.cp('dashboard.json', target)
+  FileUtils.cp('dashboard.html', target)
+  FileUtils.cp('dashboard.js', target)
+  FileUtils.cp('chart.css', target)
+  FileUtils.cp('styling.html', target)
 end
 
 json = {}
@@ -172,4 +183,6 @@ end
 
 
 json[:groups].sort_by!{|group| -group[:cpu][:total]}
-File.write(File.join(__dir__, 'data', 'dashboard.json'), json.to_json)
+File.write(File.join(__dir__, 'dashboard.json'), json.to_json)
+
+release()

@@ -1,4 +1,4 @@
-d3.json("data/dashboard.json", function(error, json) {
+d3.json("dashboard.json", function(error, json) {
 
     function append_kpi(row, tip, html) {
         row.append("div").attr("class", "kpi").attr("title", "Peak " + tip + " usage last 10 days").html(html);
@@ -20,7 +20,6 @@ d3.json("data/dashboard.json", function(error, json) {
         return '<div class="title">' + title + '</div>' +
                '<div class="value">' + write + '<span class="read">' + read + '</span></div>';
     }
-
 
     var groups = d3.select("#Groups").selectAll("div.row").data(json.groups).enter();
 
