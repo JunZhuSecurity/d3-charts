@@ -156,12 +156,12 @@ end
 if $0 == __FILE__
 
   root = File.join(__dir__, 'data')
-  #aggregate_folder(File.join(root, '2014-04-02'))
+  aggregate_folder(File.join(root, '2014-04-03'))
   #aggregate_all(root)
 
-  start = Time.now - 1 * 24 * 60 * 60
-  start = start - start.to_i % (INTERVAL)
-  puts get_stats(File.join(root, 'stats/LELAVMV004.csv'), start).inspect
+  #start = Time.now - 1 * 24 * 60 * 60
+  #start = start - start.to_i % (INTERVAL)
+  #puts get_stats(File.join(root, 'stats/LELAVMV004.csv'), start).inspect
 
 
 #start = Time.parse('2014-03-31 08:00:00') + 3600

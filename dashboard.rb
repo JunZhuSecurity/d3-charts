@@ -162,7 +162,7 @@ data = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}
 data = data.last
 
 # go back 10 days and round to INTERVAL
-start = Time.now - 5 * 24 * 60 * 60
+start = Time.now - 6 * 24 * 60 * 60
 start = start - start.to_i % (INTERVAL)
 puts start
 
@@ -181,7 +181,7 @@ json[:interval] = INTERVAL
 # cluster vms by naming convention
 # a group is detected if there are at least two servers where one is an live server
 groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
-            .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ /^L/i } && group[1].size > 1}
+            .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ /^L/i } && group[1].size > 2}
 
 #groups = groups[0..15]
 
@@ -206,9 +206,9 @@ json[:groups] = groups.map do |group, gvms|
       env: get_env(env)
   }
 end
+json[:groups].sort_by!{|group| -group[:cpu][:total]}
 json[:stop] = start + json[:groups].first[:cpu][:data].size * INTERVAL
 
-json[:groups].sort_by!{|group| -group[:cpu][:total]}
 File.write(File.join(__dir__, 'dashboard.json'), json.to_json)
 
 release()

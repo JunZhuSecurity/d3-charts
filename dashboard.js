@@ -22,9 +22,9 @@ d3.json("dashboard.json", function(error, json) {
     }
 
     function cpu_chart(chart) {
-        var margin = {top: 20, right: 30, bottom: 30, left: 40};
-        var width = 720 - margin.left - margin.right;
-        var height = 290 - margin.top - margin.bottom;
+        var margin = {top: 20, right: 20, bottom: 20, left: 30};
+        var width = 730 - margin.left - margin.right;
+        var height = 270 - margin.top - margin.bottom;
 
         // shared X-Axis
         var scaleX = d3.time.scale.utc()
@@ -76,6 +76,9 @@ d3.json("dashboard.json", function(error, json) {
              .attr("class", "cpu-line")
              .attr("d", cpu_line_generator);
     }
+
+    d3.select('#Updated').text(json.stop);
+    d3.select('#AppGroups').text(json.groups.length);
 
     var time_format = d3.time.format("%Y-%m-%d %H:%M:%S %Z");
     json.start = +time_format.parse(json.start);

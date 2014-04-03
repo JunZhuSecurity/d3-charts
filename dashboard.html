@@ -43,15 +43,17 @@
 </head>
 <body>
   <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
+    <div class="container" style="padding-top:10px;">
       <div class="navbar-header">
         <a class="navbar-brand" href="#">AS24 VM Dashboard</a>
       </div>
-      <div class="">
+      <div id="SortBy" class="">
         <ul class="nav nav-pills">
-          <li class="active"><a href="#">VM Count</a></li>
-          <li><a href="#">CPU Usage</a></li>
-          <li><a href="#">RAM Usage</a></li>
+          <li id="SortByVMCount"><a href="#">VM Count</a></li>
+          <li id="SortByCPU" class="active"><a href="#">CPU Count</a></li>
+          <li id="SortByUnusedCPU" ><a href="#">Unused CPU Count</a></li>
+          <li id="SortByRAM" ><a href="#">Live RAM</a></li>
+          <li id="SortByUnusedRAM" ><a href="#">Unused Live RAM</a></li>
         </ul>
       </div>
 
@@ -61,8 +63,10 @@
 
   <div class="jumbotron">
     <div class="container">
-      <h2>Total Number of VMs</h2>
-      <h2>Total Number of CPU</h2>
+      <div style="text-align: right;margin-top:20px;">Last Update: <span id="Updated"></span></div>
+      <div>Application Groups detected: <span id="AppGroups"></span></div>
+      <!--<div>Total Number of VMs</h2>-->
+      <!--<h2>Total Number of CPU</h2>-->
     </div>
   </div>
 
@@ -70,5 +74,6 @@
   </div>
 
   <script src="dashboard.js"></script>
+  <script src="interaction.js"></script>
 </body>
 </html>

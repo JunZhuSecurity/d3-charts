@@ -1,6 +1,7 @@
 require 'csv'
 require 'json'
 require 'FileUtils'
+require 'Time'
 
 TIME = 0
 CPU = 26 # data[0].find_index('CPU') #note that the TCP header was forgotten
@@ -8,10 +9,13 @@ RAM = 27
 
 FileUtils.chdir(__dir__)
 
+start = Time.now - 20 * 24 * 60 * 60
+
 result = []
 
 (1..6).each do |i|
   data = CSV.read("monitoring/lcdnscv00#{i}.csv").drop(1)
+  data = data.select{|row| Time.parse(row[TIME]) > start}
   data.each_index do |row|
     if data[row][CPU]
       if i == 1
@@ -24,6 +28,7 @@ result = []
 end
 (1..3).each do |i|
   data = CSV.read("monitoring/lcdnsck00#{i}.csv").drop(1)
+  data = data.select{|row| Time.parse(row[TIME]) > start}
   data.each_index do |row|
     if data[row][CPU]
       result[row][1] << data[row][CPU].to_f
