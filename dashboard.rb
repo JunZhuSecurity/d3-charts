@@ -90,8 +90,6 @@ end
 class GroupStats
 
   def initialize(folder, vms, start)
-    folder = FileUtils.chdir(File.join(__dir__, 'data')) unless folder
-
     @stats = []
     vms.each do |vm|
       vm_stats = get_stats(File.join(folder, 'stats', vm[VM_NAME] + '.csv'), start)
@@ -168,8 +166,8 @@ def generate_dashboard_json(root)
 
   json = {}
 
-  data = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}.sort
-  data = data.last
+  data = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}
+  data = data.sort.last
   vms = get_vms(data) # get latest vms
 
   # go back 10 days and round to INTERVAL
