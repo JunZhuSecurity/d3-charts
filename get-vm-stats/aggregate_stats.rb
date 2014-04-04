@@ -115,7 +115,7 @@ end
 
 def aggregate_newest(root)
   folders = Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /\d{4}-\d{2}-\d{2}$/}
-  folders.sort[-3..-1].each do |folder|
+  folders.sort[-2..-1].each do |folder|
     aggregate_folder(folder)
   end
 end

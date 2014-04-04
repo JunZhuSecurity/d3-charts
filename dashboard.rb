@@ -148,10 +148,10 @@ def release
   FileUtils.cp('dashboard.rb', 'get-vm-stats')
 
   target = '//dapptov001/s$/VMWare'
-  FileUtils.cp('collect-data-mappvck003.ps1', target)
-  FileUtils.cp('collect-data-mappvcv003.ps1', target)
-  FileUtils.cp('aggregate_stats.rb', target)
-  FileUtils.cp('dashboard.rb', target)
+  FileUtils.cp('get-vm-stats/collect-data-mappvck003.ps1', target)
+  FileUtils.cp('get-vm-stats/collect-data-mappvcv003.ps1', target)
+  FileUtils.cp('get-vm-stats/aggregate_stats.rb', target)
+  FileUtils.cp('get-vm-stats/dashboard.rb', target)
 
   target = '//dapptov001/s$/apps/d3-charts'
   FileUtils.cp('dashboard.json', target)

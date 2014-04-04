@@ -144,8 +144,16 @@ end
 
 def release
   FileUtils.chdir(__dir__)
-  target = '//dapptov001/s$/apps/d3-charts'
+  FileUtils.cp('aggregate_stats.rb', 'get-vm-stats')
+  FileUtils.cp('dashboard.rb', 'get-vm-stats')
 
+  target = '//dapptov001/s$/VMWare'
+  FileUtils.cp('get-vm-stats/collect-data-mappvck003.ps1', target)
+  FileUtils.cp('get-vm-stats/collect-data-mappvcv003.ps1', target)
+  FileUtils.cp('get-vm-stats/aggregate_stats.rb', target)
+  FileUtils.cp('get-vm-stats/dashboard.rb', target)
+
+  target = '//dapptov001/s$/apps/d3-charts'
   FileUtils.cp('dashboard.json', target)
   FileUtils.cp('dashboard.html', target)
   FileUtils.cp('dashboard.js', target)
@@ -154,60 +162,60 @@ def release
   FileUtils.cp('styling.html', target)
 end
 
-json = {}
-FileUtils.chdir(File.join(__dir__, 'data'))
+def generate_dashboard_json(root)
+  FileUtils.chdir(root)
 
-data = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}.sort
-data = data.last
+  json = {}
 
-# go back 10 days and round to INTERVAL
-start = Time.now - 6 * 24 * 60 * 60
-start = start - start.to_i % (INTERVAL)
-puts start
+  data = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}.sort
+  data = data.last
+  vms = get_vms(data) # get latest vms
 
-# read data from both v-centers
-vms = get_vms(data)
-#vms = vms.select{|vm| vm[VM_NAME] =~ /LELAVM/i}
+  # go back 10 days and round to INTERVAL
+  start = Time.now - 6 * 24 * 60 * 60
+  start = start - start.to_i % (INTERVAL)
 
-json[:total] = {
-    count: vms.size,
-    cpu: vms.reduce(0){|count, vm| count + vm[VM_CPU]},
-    ram: vms.reduce(0){|count, vm| count + vm[VM_RAM]}
-}
-json[:start] = start
-json[:interval] = INTERVAL
-
-# cluster vms by naming convention
-# a group is detected if there are at least two servers where one is an live server
-groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
-            .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ /^L/i } && group[1].size > 2}
-
-#groups = groups[0..15]
-
-
-json[:groups] = groups.map do |group, gvms|
-  env = {}
-  ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
-  live = env[:live]
-
-  stats = GroupStats.new('.', live, start)
-
-  owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| -item[1].size}.first[0]
-  owner = 'unknown' if owner == ''
-  {
-      group: group + ' ' + live.size.to_s,
-      owner: owner,
-      name: 'nyi',
-      cpu: get_cpu(live, stats),
-      ram: get_ram(live, stats),
-      disk: {read: stats.disk_read_peak_usage, write: stats.disk_write_peak_usage},
-      net: {read: stats.net_read_peak_usage, write: stats.net_write_peak_usage},
-      env: get_env(env)
+  json[:total] = {
+      count: vms.size,
+      cpu: vms.reduce(0){|count, vm| count + vm[VM_CPU]},
+      ram: vms.reduce(0){|count, vm| count + vm[VM_RAM]}
   }
+  json[:start] = start
+  json[:interval] = INTERVAL
+
+  # cluster vms by naming convention
+  # a group is detected if there are at least two servers where one is an live server
+  groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
+              .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ /^L/i } && group[1].size > 2}
+
+  json[:groups] = groups.map do |group, gvms|
+    env = {}
+    ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
+    live = env[:live]
+
+    stats = GroupStats.new('.', live, start)
+
+    owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| -item[1].size}.first[0]
+    owner = 'unknown' if owner == ''
+    {
+        group: group + ' ' + live.size.to_s,
+        owner: owner,
+        name: 'nyi',
+        cpu: get_cpu(live, stats),
+        ram: get_ram(live, stats),
+        disk: {read: stats.disk_read_peak_usage, write: stats.disk_write_peak_usage},
+        net: {read: stats.net_read_peak_usage, write: stats.net_write_peak_usage},
+        env: get_env(env)
+    }
+  end
+  json[:groups].sort_by!{|group| -group[:cpu][:total]}
+  json[:stop] = start + json[:groups].first[:cpu][:data].size * INTERVAL
+
+  json.to_json
 end
-json[:groups].sort_by!{|group| -group[:cpu][:total]}
-json[:stop] = start + json[:groups].first[:cpu][:data].size * INTERVAL
 
-File.write(File.join(__dir__, 'dashboard.json'), json.to_json)
-
-release()
+if $0 == __FILE__
+  #json = generate_dashboard_json(File.join(__dir__, 'data'))
+  #File.write(File.join(__dir__, 'dashboard.json'), json)
+  release
+end
