@@ -8,8 +8,8 @@ require_relative 'dashboard'
 puts "\nGet-VM-Stats #{Time.now}"
 
 threads = %w(S:\VMWare\collect-data-mappvcv003.ps1 S:\VMWare\collect-data-mappvck003.ps1).map do |script|
-	Thread.new{Run.powershell("invoke-command -scriptblock{#{script}}")}
-  sleep 2
+  sleep 1
+  Thread.new{Run.powershell("invoke-command -scriptblock{#{script}}")}
 end
 threads.each do |thread|
 	result = thread.value
