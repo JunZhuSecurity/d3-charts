@@ -2,6 +2,8 @@
 
 require 'as24_build_tools'
 
+require_relative 'dashboard'
+
 puts "Get-VM-Stats #{Time.now}"
 
 threads = %w(S:\VMWare\collect-data-mappvcv003.ps1 S:\VMWare\collect-data-mappvck003.ps1).map do |script|
@@ -14,3 +16,11 @@ threads.each do |thread|
 	puts
 end
 
+data = File.join(__dir__, 'data')
+puts 'Aggregate Stats'
+aggregate_newest(data)
+puts 'Generate dashboard.json'
+json = generate_dashboard_json(data)
+File.write(File.join(__dir__, '../apps/d3-charts/dashboard.json'), json)
+
+puts "Done\n"

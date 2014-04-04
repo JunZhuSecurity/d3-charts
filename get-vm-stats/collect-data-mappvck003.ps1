@@ -29,7 +29,7 @@ Write-Host "Get Live Stats"
 $stats = @{}
 $start = (get-date).AddHours(-36)
 $finish = (get-date).AddHours(-1)
-$counters = "cpu.usage.average", "cpu.usage.maximum", "mem.active.average", "mem.active.maximum", "net.received.average", "net.transmitted.average", "disk.read.average", "disk.write.average"
+$counters = "cpu.usage.average", "mem.active.average", "net.received.average", "net.transmitted.average", "disk.read.average", "disk.write.average"
 $live | ForEach{$stats[$_.Name] = get-stat $_ -stat $counters -start $start -finish $finish}
 
 Write-Host "Write Live Stats"

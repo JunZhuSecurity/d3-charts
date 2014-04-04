@@ -113,6 +113,13 @@ def aggregate_all(root)
   end
 end
 
+def aggregate_newest(root)
+  folders = Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /\d{4}-\d{2}-\d{2}$/}
+  folders.sort[-3..-1].each do |folder|
+    aggregate_folder(folder)
+  end
+end
+
 def get_stats(file, start)
 
   #TODO: Perhaps we need normalization if there are missing entries

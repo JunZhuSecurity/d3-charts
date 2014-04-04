@@ -108,7 +108,7 @@ d3.json("dashboard.json", function(error, json) {
 
     var env_table = kpis.append("table").attr("class", "env");
     var env = env_table.selectAll("tr").data(function(d){return d.env;}).enter();
-    env_table.append("tr").html("<td></td><td>VMs</td><td>CPUs</td><td>RAM [MiB]</td>");
+    env_table.append("tr").html("<td></td><td>VMs</td><td>CPUs</td><td>RAM [GiB]</td>");
 
     var env_row = env.append("tr");
     for (var i = 0; i < 4; i += 1) {
