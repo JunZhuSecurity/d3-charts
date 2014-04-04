@@ -1,7 +1,7 @@
 
 require 'csv'
-require 'FileUtils'
-require 'Time'
+require 'fileutils'
+require 'time'
 
 S_TIME = 0
 S_CPU = 1
@@ -107,14 +107,14 @@ end
 
 def aggregate_all(root)
   FileUtils.mkpath(File.join(root, 'stats')) unless Dir.exists?(File.join(root, 'stats'))
-  folders = Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /\d{4}-\d{2}-\d{2}$/}
+  folders = Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}
   folders.sort.each do |folder|
     aggregate_folder(folder)
   end
 end
 
 def aggregate_newest(root)
-  folders = Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /\d{4}-\d{2}-\d{2}$/}
+  folders = Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}
   folders.sort[-2..-1].each do |folder|
     aggregate_folder(folder)
   end

@@ -2,12 +2,14 @@
 
 require 'as24_build_tools'
 
+require_relative 'aggregate_stats'
 require_relative 'dashboard'
 
-puts "Get-VM-Stats #{Time.now}"
+puts "\nGet-VM-Stats #{Time.now}"
 
 threads = %w(S:\VMWare\collect-data-mappvcv003.ps1 S:\VMWare\collect-data-mappvck003.ps1).map do |script|
 	Thread.new{Run.powershell("invoke-command -scriptblock{#{script}}")}
+  sleep 2
 end
 threads.each do |thread|
 	result = thread.value

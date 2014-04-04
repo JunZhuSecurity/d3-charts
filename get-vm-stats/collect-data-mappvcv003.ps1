@@ -6,7 +6,7 @@ Add-PSSnapin VMware.VimAutomation.Vds
 $vis = "mappvcv003"
 $cred = Import-Clixml s:\vmware\management.cred
 $date = get-date -format yyyy-MM-dd
-$data = "s:\vmware\stats\$date"
+$data = "s:\vmware\data\$date"
 #if (Test-Path $data) {rd $data -Force -Recurse}
 md $data -ErrorAction SilentlyContinue
 cd $data
@@ -27,7 +27,7 @@ $live = ($live | ?{-not ($_.Name -eq "LCDNCSV002")}) # LCDNCSV002 seems to be de
 
 Write-Host "Get Live Stats"
 $stats = @{}
-$start = (get-date).AddHours(-36)
+$start = (get-date).AddHours(-40)
 $finish = (get-date).AddHours(-1)
 $counters = "cpu.usage.average", "mem.active.average", "net.received.average", "net.transmitted.average", "disk.read.average", "disk.write.average"
 $live | ForEach{$stats[$_.Name] = get-stat $_ -stat $counters -start $start -finish $finish}

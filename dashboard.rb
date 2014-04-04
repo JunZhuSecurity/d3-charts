@@ -1,7 +1,7 @@
 
 require 'json'
 require 'csv'
-require 'FileUtils'
+require 'fileutils'
 
 require_relative 'aggregate_stats'
 
@@ -152,6 +152,7 @@ def release
   FileUtils.cp('get-vm-stats/collect-data-mappvcv003.ps1', target)
   FileUtils.cp('get-vm-stats/aggregate_stats.rb', target)
   FileUtils.cp('get-vm-stats/dashboard.rb', target)
+  FileUtils.cp('get-vm-stats/get-vm-stats.rb', target)
 
   target = '//dapptov001/s$/apps/d3-charts'
   FileUtils.cp('dashboard.json', target)
@@ -215,7 +216,7 @@ def generate_dashboard_json(root)
 end
 
 if $0 == __FILE__
-  json = generate_dashboard_json(File.join(__dir__, 'data'))
-  File.write(File.join(__dir__, 'dashboard.json'), json)
+  #json = generate_dashboard_json(File.join(__dir__, 'data'))
+  #File.write(File.join(__dir__, 'dashboard.json'), json)
   release
 end
