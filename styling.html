@@ -19,20 +19,16 @@
     .swimlane {font-size:14px; text-align:right;}
     .vmgroup {font-size:36px; font-weight: bold; margin-bottom:-8px}
 
-    .kpi-left {padding-top:7px; padding-right:4px; width:50%}
-    .kpi-right {padding-top:7px; padding-left:4px; width:50%}
+    .kpi-left {padding-top:6px; padding-right:3px; width:50%}
+    .kpi-right {padding-top:6px; padding-left:3px; width:50%}
 
-    .kpi-row {display:table; width:100%; margin-top:4px;}
-    .kpi {/*vertical-align: top;*/
-          background: #fefc5a;  /*linear-gradient(to bottom, #fefca 0%,#f1da36 100%);*/
-          border: 1px solid; border-radius:3px; padding:1px 3px;
-          width:100%}
-
+    .kpi {background: #fefc5a;  /*linear-gradient(to bottom, #fefca 0%,#f1da36 100%);*/
+          border: 1px solid; border-radius:3px; padding:1px 3px; }
     .kpi .title {font-size:11px; text-align:left;  }
-    .kpi .sub-value {font-size:12px; font-weight: bold; text-align:right;}
-    .kpi .value {text-align:right; font-size:18px; font-weight: bold; margin-bottom:-2px; }
+    .kpi .value {text-align:right; font-size:18px; font-weight: bold; line-height: 22px; color:#000}
+    .kpi table  {width:100%; font-size:11px; color:#777}
     .kpi td {vertical-align: baseline}
-
+    .kpi td:nth-child(2) {text-align:right;}
 
 
     .env {margin-top: 10px; margin-bottom:5px; width:100%}
@@ -78,27 +74,29 @@
         <table style="width:100%">
           <tr>
             <td class="kpi-left">
-              <div class="kpi" title="Peak usage last 7 days">
-                <div class="title" >CPU</div>
-                <!--<div class="sub-value">13%</div>-->
-                <div class="value"> 4.1/8</div>
-                <div class="value">14.2/598</div>
+              <div class="kpi">
+                <table title="Peak CPU usage last 7 days">
+                  <tr><td>CPU</td><td class="value"></td></tr>
+                  <tr><td>VM</td><td class="value">3.9/8</td></tr>
+                  <tr><td>Total</td><td class="value">14.2/598</td></tr>
+                </table>
               </div>
             </td>
             <td class="kpi-right">
               <div class="kpi">
-                <div class="title">RAM [GiB]</div>
-                <!--<div class="sub-value">35%</div>-->
-                <div class="value ">3.4/16</div>
-                <div class="value"> 4.1/8</div>
+                <table>
+                  <tr><td>RAM</td><td>[GiB]</td></tr>
+                  <tr><td>VM</td><td class="value">2.9/8</td></tr>
+                  <tr><td>Total</td><td class="value">145/1890</td></tr>
+                </table>
               </div>
             </td>
           </tr>
           <tr>
             <td class="kpi-left">
               <div class="kpi">
-                <table style="width:100%; font-size:11px;" >
-                  <tr><td>Disk IO</td><td style="text-align: right;">[MiB/s]</td></tr>
+                <table>
+                  <tr><td>Disk IO</td><td>[MiB/s]</td></tr>
                   <tr><td>Read</td><td class="value">1715.1</td></tr>
                   <tr><td>Write</td><td class="value">1756.8</td></tr>
                 </table>
@@ -106,14 +104,14 @@
             </td>
             <td class="kpi-right">
               <div class="kpi">
-                <table style="width:100%; font-size:11px;">
+                <table>
                   <tr>
                     <td>Net IO</td>
-                    <td style="text-align: right;">[MiB/s]</td>
+                    <td>[MiB/s]</td>
                   </tr>
                   <tr>
                     <td>Receive</td>
-                    <td class="value" >1715.1</td>
+                    <td class="value">1715.1</td>
                   </tr>
                   <tr>
                     <td>Send</td>
