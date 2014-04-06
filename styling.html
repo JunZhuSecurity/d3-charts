@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>List of Apps</title>
+  <title>Styling</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -19,24 +19,29 @@
     .swimlane {font-size:14px; text-align:right;}
     .vmgroup {font-size:36px; font-weight: bold; margin-bottom:-8px}
 
+    .kpi-left {padding-top:7px; padding-right:4px; width:50%}
+    .kpi-right {padding-top:7px; padding-left:4px; width:50%}
+
     .kpi-row {display:table; width:100%; margin-top:4px;}
-    .kpi {display:table-cell; vertical-align: top;
-          background: linear-gradient(to bottom, #fefcea 0%,#f1da36 100%);
-          border: 1px solid; border-radius:3px; padding:1px 3px;;
-          width:49.5%}
-    .kpi-space {display:table-cell; width:1%}
-    .kpi .title {font-size:12px; text-align:left; }
-    .kpi .sub-value {font-size:12px; font-weight: bold; float:right}
-    .kpi .value {text-align:right; font-size:20px; font-weight: bold; /*white-space: nowrap;*/ margin-bottom:-3px; clear:both;}
-    .kpi .unit {font-size:10px;font-weight: normal;}
+    .kpi {/*vertical-align: top;*/
+          background: #fefc5a;  /*linear-gradient(to bottom, #fefca 0%,#f1da36 100%);*/
+          border: 1px solid; border-radius:3px; padding:1px 3px;
+          width:100%}
+
+    .kpi .title {font-size:11px; text-align:left;  }
+    .kpi .sub-value {font-size:12px; font-weight: bold; text-align:right;}
+    .kpi .value {text-align:right; font-size:18px; font-weight: bold; margin-bottom:-2px; }
+    .kpi td {vertical-align: baseline}
+
+
 
     .env {margin-top: 10px; margin-bottom:5px; width:100%}
     .env td {padding:1px 3px; margin:5px; white-space: nowrap;}
     .env td:nth-child(2) {width: 42px;}
     .env td:nth-child(1n + 2) {border-left: 1px solid #999; text-align:right;}
     .env tr:nth-child(1n + 2) {border-top: 1px solid #999; font-weight:bold; }
-    .env tr:nth-child(1) td {font-size:12px; color: #555;  text-align:center;}
-    .env td:nth-child(1) {font-size:12px; color: #555; font-weight:normal;text-align:center;}
+    .env tr:nth-child(1) td {font-size:12px; color: #555;  text-align:right;}
+    .env td:nth-child(1) {font-size:12px; color: #555; font-weight:normal;text-align:left;}
   </style>
 
 </head>
@@ -60,8 +65,6 @@
 
   <div class="jumbotron">
     <div class="container">
-      <h2>Total Number of VMs</h2>
-      <h2>Total Number of CPU</h2>
     </div>
   </div>
 
@@ -72,34 +75,55 @@
         <div class="vmgroup">WEBAB</div>
         <div class="swimlane">crodemeyer: MyArea</div>
 
-        <div class="kpi-row">
-          <div class="kpi" title="Peak usage last 10 days">
-            <div class="sub-value">13%</div>
-            <div class="title">CPU</div>
-            <div class="value">14.2/598</div>
-          </div>
-          <div class="kpi-space"></div>
-          <div class="kpi">
-            <div class="sub-value">35%</div>
-            <div class="title">RAM [GiB]</div>
-            <div class="value " >3.4/16</div>
-          </div>
-        </div>
-
-        <div class="kpi-row">
-          <div class="kpi">
-            <div class="title">Disk IO [MB/s]</div>
-            <div class="value">34.1<span style="float:left">19.5</span></div>
-            <!--<div class="value pull-right">19.5</div>-->
-          </div>
-          <div class="kpi-space"></div>
-          <div class="kpi">
-              <div class="title">Net IO [MB/s]</div>
-
-            <!--<div class="value pull-left"><span class="unit">R</span>23.3</div>-->
-            <!--<div class="value pull-right" title="Transmit"><span class="unit">W</span>45.7</div>-->
-          </div>
-        </div>
+        <table style="width:100%">
+          <tr>
+            <td class="kpi-left">
+              <div class="kpi" title="Peak usage last 7 days">
+                <div class="title" >CPU</div>
+                <!--<div class="sub-value">13%</div>-->
+                <div class="value"> 4.1/8</div>
+                <div class="value">14.2/598</div>
+              </div>
+            </td>
+            <td class="kpi-right">
+              <div class="kpi">
+                <div class="title">RAM [GiB]</div>
+                <!--<div class="sub-value">35%</div>-->
+                <div class="value ">3.4/16</div>
+                <div class="value"> 4.1/8</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="kpi-left">
+              <div class="kpi">
+                <table style="width:100%; font-size:11px;" >
+                  <tr><td>Disk IO</td><td style="text-align: right;">[MiB/s]</td></tr>
+                  <tr><td>Read</td><td class="value">1715.1</td></tr>
+                  <tr><td>Write</td><td class="value">1756.8</td></tr>
+                </table>
+              </div>
+            </td>
+            <td class="kpi-right">
+              <div class="kpi">
+                <table style="width:100%; font-size:11px;">
+                  <tr>
+                    <td>Net IO</td>
+                    <td style="text-align: right;">[MiB/s]</td>
+                  </tr>
+                  <tr>
+                    <td>Receive</td>
+                    <td class="value" >1715.1</td>
+                  </tr>
+                  <tr>
+                    <td>Send</td>
+                    <td class="value">1756.8</td>
+                  </tr>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </table>
 
         <table class="env">
           <tr>
@@ -115,7 +139,7 @@
             <td>16384</td>
           </tr>
           <tr>
-            <td>REF</td>
+            <td>KFALL</td>
             <td>2</td>
             <td>2</td>
             <td>8192</td>
@@ -126,6 +150,12 @@
             <td>2</td>
             <td>8192</td>
           </tr>
+          <tr>
+            <td>CI</td>
+            <td>1</td>
+            <td>2</td>
+            <td>8192</td>
+          </tr>
         </table>
       </div>
       <div class="col-md-9" style="border-left:1px solid">
@@ -133,53 +163,7 @@
       </div>
     </div>
 
-    <div class="row" style="background-color: seashell;">
-         <div id="WEBDE" class="col-md-3 border-green">
-           <div class="vmgroup">WEBDE</div>
-           <div class="swimlane">DE-Home, List</div>
 
-           <div>
-             <div class="kpi" style="" title="Peak usage last 10 days">
-            <div>CPU 45%</div>
-            <div style="font-size:20px; font-weight: bold;text-align:right ">4.2/598</div>
-          </div>
-          <div style="display:table-cell;width:5px"></div>
-          <div class="kpi" style=""><div>RAM 30%</div><div>3.4/16</div></div>
-        </div>
-           <div>Latency 23ms</div>
-           <table>
-             <thead>
-             <td>Env</td>
-             <td style="min-width:30px">VM</td>
-             <td>CPU</td>
-             <td>RAM</td>
-             </thead>
-             <tr>
-               <td>LIVE</td>
-               <td>8</td>
-               <td>8</td>
-               <td>16GB</td>
-             </tr>
-             <tr>
-               <td>REF</td>
-               <td>2</td>
-               <td>2</td>
-               <td>16GB</td>
-             </tr>
-             <tr>
-               <td>STABLE</td>
-               <td>2</td>
-               <td>2</td>
-               <td>16GB</td>
-             </tr>
-           </table>
-           <div style="font-size:18px;">Owner: DLM+DSM</div>
-         </div>
-         <div class="col-md-9 border-red">
-           Here comes the chart
-         </div>
-
-       </div>
 
 
 
