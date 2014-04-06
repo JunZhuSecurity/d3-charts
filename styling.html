@@ -14,22 +14,24 @@
 
   <style>
     .row {margin-bottom:18px; box-shadow:2px 2px 5px #d0d0d2; background-color: #f4f4f8; border-radius:5px;}
-    .container {width:1000px;}
+    .container {width:1170px;}
 
-    .swimlane {font-size:14px; text-align:right;}
+    .swimlane {font-size:14px; text-align:left; margin-top:-5px;}
     .vmgroup {font-size:36px; font-weight: bold; margin-bottom:-8px}
+    .data {font-size: 12px; margin-top:8px;}
+    .data td:nth-child(1) { text-align:right; font-weight: bold;}
+    .data td:nth-child(2) { text-align:left; padding-left:2px; }
 
-    .kpi-left {padding-top:6px; padding-right:3px; width:50%}
-    .kpi-right {padding-top:6px; padding-left:3px; width:50%}
+    .kpi-left {padding-top:6px; padding-right:4px; width:50%}
+    .kpi-right {padding-top:6px; padding-left:4px; width:50%}
 
-    .kpi {background: #fefc5a;  /*linear-gradient(to bottom, #fefca 0%,#f1da36 100%);*/
-          border: 1px solid; border-radius:3px; padding:1px 3px; }
-    .kpi .title {font-size:11px; text-align:left;  }
-    .kpi .value {text-align:right; font-size:18px; font-weight: bold; line-height: 22px; color:#000}
+    .kpi {background: #fe7;  /*linear-gradient(to bottom, #fefca 0%,#f1da36 100%);*/
+          border: 1px solid; border-radius:3px; padding:1px 3px; /*font-family:Calibri*/}
+    .kpi .title {font-size:11px;}
+    .kpi .value {text-align:right; font-size:19px; font-weight: bold; line-height: 22px; color:#000;  white-space: nowrap;}
     .kpi table  {width:100%; font-size:11px; color:#777}
     .kpi td {vertical-align: baseline}
     .kpi td:nth-child(2) {text-align:right;}
-
 
     .env {margin-top: 10px; margin-bottom:5px; width:100%}
     .env td {padding:1px 3px; margin:5px; white-space: nowrap;}
@@ -37,7 +39,7 @@
     .env td:nth-child(1n + 2) {border-left: 1px solid #999; text-align:right;}
     .env tr:nth-child(1n + 2) {border-top: 1px solid #999; font-weight:bold; }
     .env tr:nth-child(1) td {font-size:12px; color: #555;  text-align:right;}
-    .env td:nth-child(1) {font-size:12px; color: #555; font-weight:normal;text-align:left;}
+    .env td:nth-child(1) {font-size:12px; color: #444; font-weight:normal;text-align:left;}
   </style>
 
 </head>
@@ -67,27 +69,34 @@
   <div class="container">
 
     <div id="WEBAB" class="row">
-      <div class="col-md-3">
-        <div class="vmgroup">WEBAB</div>
-        <div class="swimlane">crodemeyer: MyArea</div>
+      <div class="col-md-3" style="width:273px;">
+        <div><span class="vmgroup">WEBAB</span>
+          <table class="data" style="float:right; ">
+                   <tr><td>23</td><td>VM</td></tr>
+                   <tr><td>22456 </td><td>GiB</td></tr>
+                 </table>
+        </div>
+        <div class="swimlane">MyArea: crodemeyer</div>
+
 
         <table style="width:100%">
           <tr>
             <td class="kpi-left">
               <div class="kpi">
-                <table title="Peak CPU usage last 7 days">
-                  <tr><td>CPU</td><td class="value"></td></tr>
-                  <tr><td>VM</td><td class="value">3.9/8</td></tr>
-                  <tr><td>Total</td><td class="value">14.2/598</td></tr>
+                <table title="34% Peak CPU usage last 7 days">
+                  <tr><td colspan="2" class="title">#CPU</td></tr>
+                  <tr><td>Σ:</td><td class="value">14.2/598</td></tr>
+                  <!--<tr><td style="color:#000;font-weight: bold">24.1%</td><td class="value">3.9/8</td></tr>-->
+                  <tr><td style="">VM:</td><td class="value">3.9/8</td></tr>
                 </table>
               </div>
             </td>
             <td class="kpi-right">
               <div class="kpi">
-                <table>
-                  <tr><td>RAM</td><td>[GiB]</td></tr>
-                  <tr><td>VM</td><td class="value">2.9/8</td></tr>
-                  <tr><td>Total</td><td class="value">145/1890</td></tr>
+                <table title="37% Peak RAM usage last 7 days">
+                  <tr><td class="title">RAM</td><td>[GiB]</td></tr>
+                  <tr><td>Σ:</td><td class="value" title="Used/Assigned">899/1890</td></tr>
+                  <tr><td>VM:</td><td class="value">2.9/16</td></tr>
                 </table>
               </div>
             </td>
@@ -96,9 +105,9 @@
             <td class="kpi-left">
               <div class="kpi">
                 <table>
-                  <tr><td>Disk IO</td><td>[MiB/s]</td></tr>
-                  <tr><td>Read</td><td class="value">1715.1</td></tr>
-                  <tr><td>Write</td><td class="value">1756.8</td></tr>
+                  <tr ><td class="title">Disk IO</td><td>[MiB/s]</td></tr>
+                  <tr><td>Read:</td><td class="value">715.1</td></tr>
+                  <tr><td>Wrote:</td><td class="value">756.8</td></tr>
                 </table>
               </div>
             </td>
@@ -106,16 +115,16 @@
               <div class="kpi">
                 <table>
                   <tr>
-                    <td>Net IO</td>
+                    <td class="title">NET IO</td>
                     <td>[MiB/s]</td>
                   </tr>
                   <tr>
-                    <td>Receive</td>
+                    <td>Recvd:</td>
                     <td class="value">1715.1</td>
                   </tr>
                   <tr>
-                    <td>Send</td>
-                    <td class="value">1756.8</td>
+                    <td>Sent:</td>
+                    <td class="value">756.8</td>
                   </tr>
                 </table>
               </div>
@@ -126,9 +135,9 @@
         <table class="env">
           <tr>
           <td></td>
-          <td>VMs</td>
-          <td>CPUs</td>
-          <td>RAM [MiB]</td>
+          <td>#VM</td>
+          <td>#CPU</td>
+          <td>RAM [GiB]</td>
           </tr>
           <tr>
             <td>LIVE</td>
