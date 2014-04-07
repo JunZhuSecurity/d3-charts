@@ -94,7 +94,7 @@ d3.json("dashboard.json", function(error, json) {
     var group = groups.append("div").attr("class", "row").attr("id", function(d){return d.group;});
     var kpis = group.append("div").attr("class", "col-md-3");
     kpis.append("div").attr("class", "vmgroup").text(function(d){return d.group;});
-    kpis.append("div").attr("class", "swimlane").text(function(d) {return d.owner + ": " + d.name;});
+    kpis.append("div").attr("class", "owner").text(function(d) {return d.alias + ": " + d.owner;});
 
     var row = kpis.append("div").attr("class", "kpi-row");
     append_kpi(row, "CPU", function(d){return kpi_usage("CPU", d.cpu.used, d.cpu.total);});

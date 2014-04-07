@@ -4,6 +4,7 @@ require 'csv'
 require 'fileutils'
 
 require_relative 'aggregate_stats'
+require_relative 'app_info'
 
 # indices in vms.csv
 VM_NAME = 0
@@ -112,7 +113,7 @@ class GroupStats
     peak_usage(S_DISK_OUT, 1)
   end
 
- def net_read_peak_usage
+  def net_read_peak_usage
     peak_usage(S_NET_IN, 1)
   end
 
@@ -122,7 +123,7 @@ class GroupStats
 
   def peak_usage(type, round = 1)
     #puts @stats.inspect  if  @stats[S_CPU_AVG].max.nil?
-    (@stats[type].max || 0).round(round).to_s
+    (@stats[type].max || 0).round(round)
   end
 
 end
@@ -131,12 +132,14 @@ def release
   FileUtils.chdir(__dir__)
   FileUtils.cp('aggregate_stats.rb', 'get-vm-stats')
   FileUtils.cp('dashboard.rb', 'get-vm-stats')
+  FileUtils.cp('app_info.rb', 'get-vm-stats')
 
   target = '//dapptov001/s$/VMWare'
   FileUtils.cp('get-vm-stats/collect-data-mappvck003.ps1', target)
   FileUtils.cp('get-vm-stats/collect-data-mappvcv003.ps1', target)
   FileUtils.cp('get-vm-stats/aggregate_stats.rb', target)
   FileUtils.cp('get-vm-stats/dashboard.rb', target)
+  FileUtils.cp('get-vm-stats/app_info.rb', target)
   FileUtils.cp('get-vm-stats/get-vm-stats.rb', target)
 
   target = '//dapptov001/s$/apps/d3-charts'
@@ -175,18 +178,21 @@ def generate_dashboard_json(root)
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
   json[:groups] = groups.map do |group, gvms|
+
     env = {}
     ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
     live = env[:live]
 
     stats = GroupStats.new('.', live, start)
 
-    owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| -item[1].size}.first[0]
+    owner = get_app_info(group)[:owner]
+    owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| -item[1].size}.first[0] if owner == ''
     owner = 'unknown' if owner == ''
+
     {
         group: group,
         owner: owner,
-        name: 'nyi',
+        alias: get_app_info(group)[:alias],
         cpu: get_cpu(live, stats),
         ram: get_ram(live, stats),
         disk: {read: stats.disk_read_peak_usage, write: stats.disk_write_peak_usage},
