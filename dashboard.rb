@@ -15,7 +15,7 @@ VM_OS = 5
 VM_OWNER = 6
 
 ENVIRONMENTS = {
-    :live => /^L/i,
+    :live => /^L.*[^K]\d\d\d$/i,
     :kfall => /^L.*K\d\d\d$/i,
     :ref => /^R/i,
     :stable => /^D/i,
@@ -58,29 +58,16 @@ end
 
 def get_env(environments)
   result = []
-  %i(live ref stable ci other).select{|key| environments[key]}.each do |key|
-    count = cpu = ram = kcount = kcpu = kram = 0
+  %i(live kfall ref stable ci other).select{|key| environments[key]}.each do |key|
+    count = cpu = ram = 0
     environments[key].each do |vm|
-      if vm[VM_NAME] =~ /^L.*K\d\d\d$/i # KFALL
-        kcount += 1
-        kcpu += vm[VM_CPU]
-        kram += vm[VM_RAM]
-      else
-        count += 1
-        cpu += vm[VM_CPU]
-        ram += vm[VM_RAM]
-      end
+      count += 1
+      cpu += vm[VM_CPU]
+      ram += vm[VM_RAM]
     end
     if count > 0
       cpu = (cpu / count).round(1)
       ram = (ram / count).round(1)
-      if key == :live && kcount > 0
-        kcpu = (kcpu / kcount).round(1)
-        kram = (kram / kcount).round(1)
-        count = "#{count}+#{kcount}"
-        cpu = "#{'%g' % cpu}(#{'%g' % kcpu})" if cpu != kcpu
-        ram = "#{'%g' % ram}(#{'%g' % kram})" if ram != kram
-      end
       result << [key.to_s.upcase, count, cpu, ram]
     end
   end
@@ -185,7 +172,7 @@ def generate_dashboard_json(root)
   # cluster vms by naming convention
   # a group is detected if there are at least two servers where one is an live server
   groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
-              .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ /^L/i } && group[1].size > 2}
+              .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
   json[:groups] = groups.map do |group, gvms|
     env = {}
@@ -197,7 +184,7 @@ def generate_dashboard_json(root)
     owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| -item[1].size}.first[0]
     owner = 'unknown' if owner == ''
     {
-        group: group + ' ' + live.size.to_s,
+        group: group,
         owner: owner,
         name: 'nyi',
         cpu: get_cpu(live, stats),
@@ -214,7 +201,7 @@ def generate_dashboard_json(root)
 end
 
 if $0 == __FILE__
-  #json = generate_dashboard_json(File.join(__dir__, 'data'))
-  #File.write(File.join(__dir__, 'dashboard.json'), json)
+  json = generate_dashboard_json(File.join(__dir__, 'data'))
+  File.write(File.join(__dir__, 'dashboard.json'), json)
   release
 end
