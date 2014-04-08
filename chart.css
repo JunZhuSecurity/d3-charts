@@ -1,12 +1,13 @@
 
 .axis text {
-  font: 11px Verdana;
+  font-size: 11px;
+  fill: #111;
 }
 
 .axis path,
 .axis line {
   fill: none;
-  stroke: #000;
+  stroke: #222;
   shape-rendering: crispEdges;
 }
 
