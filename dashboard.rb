@@ -161,7 +161,7 @@ def generate_dashboard_json(root)
   vms = get_vms(data) # get latest vms
 
   # go back 7 days and round to INTERVAL
-  start = Time.now - 6 * 24 * 60 * 60  - 8 * 60 * 60
+  start = Time.now - 6 * 24 * 60 * 60  - 12 * 60 * 60
   start = start - start.to_i % (INTERVAL)
 
   json[:total] = {
