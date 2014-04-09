@@ -1,7 +1,7 @@
 (function(){
 
     function sortGroupBy(id, comparator){
-        $(id).click(function(){
+        d3.select(id).on("click", function(){
             d3.select("#Groups").selectAll("div.row").sort(comparator);
             d3.selectAll('#SortBy .active').classed("active", false);
             d3.select(id).classed("active", true);

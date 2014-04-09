@@ -10,7 +10,7 @@ require_relative 'app_info'
 VM_NAME = 0
 VM_CPU = 1
 VM_RAM = 2
-VM_SPACE = 3
+VM_STORAGE = 3
 VM_HOST = 4
 VM_OS = 5
 VM_OWNER = 6
@@ -193,6 +193,8 @@ def generate_dashboard_json(root)
         group: group,
         owner: owner,
         alias: get_app_info(group)[:alias],
+        count: gvms.size,
+        storage: gvms.reduce(0){|m, vm| m + vm[VM_STORAGE]},
         cpu: get_cpu(live, stats),
         ram: get_ram(live, stats),
         disk: {read: stats.disk_read_peak_usage, write: stats.disk_write_peak_usage},
@@ -209,5 +211,5 @@ end
 if $0 == __FILE__
   json = generate_dashboard_json(File.join(__dir__, 'data'))
   File.write(File.join(__dir__, 'dashboard.json'), json)
-  release
+  #release
 end
