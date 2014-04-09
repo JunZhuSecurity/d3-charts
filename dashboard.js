@@ -85,10 +85,6 @@ d3.json("dashboard.json", function(error, json) {
     json.stop = +time_format.parse(json.stop);
     json.interval = json.interval * 1000;
 
-    console.log(json.start);
-    console.log(json.stop);
-    console.log(json.interval);
-
     var groups = d3.select("#Groups").selectAll("div.row").data(json.groups).enter();
 
     var group = groups.append("div").attr("class", "row").attr("id", function(d){return d.group;});
