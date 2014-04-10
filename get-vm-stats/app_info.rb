@@ -53,7 +53,7 @@ APP_INFO = {
     cdncs: {owner: '', alias: ''},
     cdnds: {owner: '', alias: ''},
     cdnpi: {owner: '', alias: 'Picture Server'},
-    cdnsc: {owner: 'crodemeyer', alias: 's.autoscout24.de'},
+    cdnsc: {owner: 'crodemeyer', alias: 's.autoscout24.de', artifacts: '//dappbsv002/transfer/build_results/s.autoscout24.de'},
     cdnws: {owner: '', alias: ''},
     dcoas: {owner: '', alias: ''},
     dcoli: {owner: '', alias: ''},
@@ -120,7 +120,7 @@ APP_INFO = {
     talex: {owner: '', alias: ''},
     terop: {owner: '', alias: ''},
     uxadm: {owner: '', alias: ''},
-    webab: {owner: 'DLM+DSM', alias: 'MyArea'},
+    webab: {owner: 'DLM+DSM', alias: 'MyArea', artifacts: '//dappbsv002/transfer/build_results/MyArea'},
     webac: {owner: '', alias: ''},
     webad: {owner: '', alias: ''},
     webai: {owner: '', alias: ''},
@@ -161,10 +161,20 @@ APP_INFO = {
     webts: {owner: '', alias: ''},
     webtw: {owner: '', alias: ''},
     webvc: {owner: '', alias: ''},
-    webws: {owner: 'Multiple', alias: 'WCF Web Services'},
+    webws: {owner: 'VM', alias: 'WCF Web Services'},
 }
 
 def get_app_info(app)
   info = APP_INFO[app.to_s.downcase.to_sym]
   info || {owner: '', alias: ''}
+end
+
+if $0 == __FILE__
+  require 'CSV'
+  CSV.open('app_info.csv', 'wb') do |csv|
+    csv << %w(group owner alias artifacts)
+    APP_INFO.each do |group, data|
+      csv << [group, data[:owner], data[:alias], data[:artifacts]]
+    end
+  end
 end

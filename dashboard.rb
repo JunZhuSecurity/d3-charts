@@ -9,8 +9,8 @@ require_relative 'release'
 # indices in vms.csv
 VM_NAME = 0
 VM_CPU = 1
-VM_RAM = 2
-VM_STORAGE = 3
+VM_RAM = 2      #GiB
+VM_STORAGE = 3  #GiB
 VM_HOST = 4
 VM_OS = 5
 VM_OWNER = 6
@@ -77,57 +77,83 @@ end
 
 class GroupStats
 
+  # total peak
+  # vm peak
+  # timeline
+
   def initialize(folder, vms, start)
+    @vm_count = vms.size
     @stats = []
-    @cpu = 0
-    @ram = 0
+    @cpu_total    = @ram_total = 0
+    @cpu_vm_total = @ram_vm_total = 0
+    @cpu_vm_used  = @ram_vm_used = 0
     vms.each do |vm|
-      @cpu += vm[VM_CPU]
-      @ram += vm[VM_RAM]
+      @cpu_total += vm[VM_CPU]
+      @ram_total += vm[VM_RAM]
       vm_stats = get_stats(File.join(folder, 'stats', vm[VM_NAME] + '.csv'), start)
       S_CPU.upto(METRIC.size - 1){|s| @stats[s] = Array.new(vm_stats.size, 0)} unless @stats.size > 0
       vm_stats.each_with_index do |item, i|
         if i < @stats[1].size  # Hack in case stats count differs
-          cpu = item[S_CPU] * vm[VM_CPU] / 100
-          @stats[S_CPU][i] += cpu
-          #@stats[S_CPU_MAX][i] = cpu if cpu > @stats[S_CPU_MAX][i]
 
-          @stats[S_RAM][i] = item[S_RAM] if item[S_RAM] > @stats[S_RAM][i]
+          used = item[S_CPU] * vm[VM_CPU] / 100
+          @stats[S_CPU][i] += used
+          if used > @cpu_vm_used
+            @cpu_vm_used = used
+            @cpu_vm_total = vm[VM_CPU]
+          end
+
+          used = item[S_RAM]
+          @stats[S_RAM][i] += used
+          if used > @ram_vm_used
+            @ram_vm_used = used
+            @ram_vm_total = vm[VM_RAM]
+          end
+
           S_DISK_IN.upto(S_NET_OUT){|s| @stats[s][i] += item[s]}
         end
       end
     end
-    @cpu /= vms.size
-    @ram /= vms.size
-    #@stats[S_RAM_AVG].each_index{|i| @stats[S_RAM_AVG][i] /= vms.size}
   end
 
-  def cpu_data
-    @stats[S_CPU].map{|v| v.round(2)}
+  def cpu
+    used_total(S_CPU, @cpu_total, @cpu_vm_used, @cpu_vm_total)
   end
 
-  def cpu_peak_usage
-    peak_usage(S_CPU, 1)
+  def ram
+    used_total(S_RAM, @ram_total, @ram_vm_used, @ram_vm_total)
   end
 
-  def ram_peak_usage
-    peak_usage(S_RAM, 1)
+  def used_total(type, total, vm_used, vm_total)
+    {
+        used: peak_usage(type),
+        total: total,
+        vm: {
+            used:  vm_used.round(1),
+            total: vm_total
+        },
+        data: data(type)
+    }
   end
 
-  def disk_read_peak_usage
-    peak_usage(S_DISK_IN, 1)
+  def disk
+    io(S_DISK_IN)
   end
 
-  def disk_write_peak_usage
-    peak_usage(S_DISK_OUT, 1)
+  def net
+    io(S_NET_IN)
   end
 
-  def net_read_peak_usage
-    peak_usage(S_NET_IN, 1)
+  def io(type)
+    {
+      in: peak_usage(type),
+      out: peak_usage(type + 1),
+      data_in: data(type),
+      data_out: data(type + 1)
+    }
   end
 
-  def net_write_peak_usage
-    peak_usage(S_NET_OUT, 1)
+  def data(type)
+    @stats[type].map{|v| v.round(2)}
   end
 
   def peak_usage(type, round = 1)
@@ -146,14 +172,18 @@ def generate_dashboard_json(root)
   data = data.sort.last
   vms = get_vms(data) # get latest vms
 
+  oses = vms.map{|vm| vm[VM_OS] || "other"}.group_by{|os| os.downcase}.map{|k,v|[k, v.size]}.sort_by{|item| -item[1]}
+  puts oses.inspect
+
   # go back 7 days and round to INTERVAL
-  start = Time.now - 6 * 24 * 60 * 60  - 12 * 60 * 60
+  start = Time.now - 6 * 24 * 60 * 60  - 6 * 60 * 60
   start = start - start.to_i % (INTERVAL)
 
   json[:total] = {
       count: vms.size,
       cpu: vms.reduce(0){|count, vm| count + vm[VM_CPU]},
-      ram: vms.reduce(0){|count, vm| count + vm[VM_RAM]}
+      ram: vms.reduce(0){|count, vm| count + vm[VM_RAM]}.round(0),
+      storage: vms.reduce(0){|count, vm| count + vm[VM_STORAGE]}.round(0)
   }
   json[:start] = start
   json[:interval] = INTERVAL
@@ -163,7 +193,7 @@ def generate_dashboard_json(root)
   groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
-  json[:groups] = groups.map do |group, gvms|
+  json[:groups] = groups.take(2).map do |group, gvms|
 
     env = {}
     ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
@@ -172,22 +202,26 @@ def generate_dashboard_json(root)
     stats = GroupStats.new('.', live, start)
 
     owner = get_app_info(group)[:owner]
-    owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| -item[1].size}.first[0] if owner == ''
+    owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| item[1].size}.last[0] if owner == ''
     owner = 'unknown' if owner == ''
+
+    os = live.group_by{|vm| vm[VM_OS]}.to_a.sort_by{|item| item[1].size}.last[0]
 
     {
         group: group,
         owner: owner,
         alias: get_app_info(group)[:alias],
+        os: os,
         count: gvms.size,
         storage: gvms.reduce(0){|m, vm| m + vm[VM_STORAGE]}.round(0),
-        cpu: get_cpu(live, stats),
-        ram: get_ram(live, stats),
-        disk: {read: stats.disk_read_peak_usage, write: stats.disk_write_peak_usage},
-        net: {read: stats.net_read_peak_usage, write: stats.net_write_peak_usage},
+        cpu: stats.cpu,
+        ram: stats.ram,
+        disk: stats.disk,
+        net: stats.net,
         env: get_env(env)
     }
   end
+
   json[:groups].sort_by!{|group| -group[:cpu][:total]}
   json[:stop] = start + json[:groups].first[:cpu][:data].size * INTERVAL
 

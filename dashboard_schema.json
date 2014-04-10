@@ -8,10 +8,10 @@
             "owner": "DLM+DSM",
             "count": 17,
             "storage": 1648,
-            "os": "Windows 2008",
+            "os": "Win2008R2",
 
             "cpu": {
-                "peak": {"vm":[1.2, 6], "total":[10.1, 192] },
+                "usage": [1.2, 6, 10.1, 192],
                 "data": [1234, 4.5]
             },
             "ram": {
@@ -20,13 +20,13 @@
             },
             "disk": {"in": 47,"out": 48},
             "net": {"in": 1, "out": 2},
-            "release": ["2014-03-29 17:50:32", "2014-03-30 15:00"],
+            "release": ["2014-03-29 17:50:32", "2014-03-30 15:00"],  // think about using javascript times
 
             "env": [["LIVE", 8, 8, 16384],["REF"],["KFALL"]]
         },
         {
             "group": "CDNSC",
-            "name":null,
+            "name": null,
             "owner" : "crodemeyer",
             "storage" : 47.5, // GiB
             "env": [["LIVE", "12-4", 8, 16384], ["REF", 2, 2, 4096], ["STABLE", 2, 2, 4096], ["CI", 2, 2, 4096]],

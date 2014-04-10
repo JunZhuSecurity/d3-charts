@@ -1,16 +1,16 @@
 
 require 'json'
 require 'csv'
-require 'fileutils'
 
 require_relative 'aggregate_stats'
 require_relative 'app_info'
+require_relative 'release'
 
 # indices in vms.csv
 VM_NAME = 0
 VM_CPU = 1
 VM_RAM = 2
-VM_SPACE = 3
+VM_STORAGE = 3
 VM_HOST = 4
 VM_OS = 5
 VM_OWNER = 6
@@ -32,7 +32,7 @@ def get_vms(folder)
     vm[VM_NAME].upcase!
     vm[VM_CPU] = vm[VM_CPU].to_i
     vm[VM_RAM] = vm[VM_RAM].to_f / 1024
-    vm[VM_SPACE] = vm[VM_SPACE].to_f
+    vm[VM_STORAGE] = vm[VM_STORAGE].to_f
   end
   vms
 end
@@ -79,17 +79,26 @@ class GroupStats
 
   def initialize(folder, vms, start)
     @stats = []
+    @cpu = 0
+    @ram = 0
     vms.each do |vm|
+      @cpu += vm[VM_CPU]
+      @ram += vm[VM_RAM]
       vm_stats = get_stats(File.join(folder, 'stats', vm[VM_NAME] + '.csv'), start)
       S_CPU.upto(METRIC.size - 1){|s| @stats[s] = Array.new(vm_stats.size, 0)} unless @stats.size > 0
       vm_stats.each_with_index do |item, i|
-        if i < @stats[1].size  # Hack in case different stats counts
-          @stats[S_CPU][i] += item[S_CPU] * vm[VM_CPU] / 100
+        if i < @stats[1].size  # Hack in case stats count differs
+          cpu = item[S_CPU] * vm[VM_CPU] / 100
+          @stats[S_CPU][i] += cpu
+          #@stats[S_CPU_MAX][i] = cpu if cpu > @stats[S_CPU_MAX][i]
+
           @stats[S_RAM][i] = item[S_RAM] if item[S_RAM] > @stats[S_RAM][i]
           S_DISK_IN.upto(S_NET_OUT){|s| @stats[s][i] += item[s]}
         end
       end
     end
+    @cpu /= vms.size
+    @ram /= vms.size
     #@stats[S_RAM_AVG].each_index{|i| @stats[S_RAM_AVG][i] /= vms.size}
   end
 
@@ -128,29 +137,6 @@ class GroupStats
 
 end
 
-def release
-  FileUtils.chdir(__dir__)
-  FileUtils.cp('aggregate_stats.rb', 'get-vm-stats')
-  FileUtils.cp('dashboard.rb', 'get-vm-stats')
-  FileUtils.cp('app_info.rb', 'get-vm-stats')
-
-  target = '//dapptov001/s$/VMWare'
-  FileUtils.cp('get-vm-stats/collect-data-mappvck003.ps1', target)
-  FileUtils.cp('get-vm-stats/collect-data-mappvcv003.ps1', target)
-  FileUtils.cp('get-vm-stats/aggregate_stats.rb', target)
-  FileUtils.cp('get-vm-stats/dashboard.rb', target)
-  FileUtils.cp('get-vm-stats/app_info.rb', target)
-  FileUtils.cp('get-vm-stats/get-vm-stats.rb', target)
-
-  target = '//dapptov001/s$/apps/d3-charts'
-  FileUtils.cp('dashboard.json', target)
-  FileUtils.cp('dashboard.html', target)
-  FileUtils.cp('dashboard.js', target)
-  FileUtils.cp('interaction.js', target)
-  FileUtils.cp('chart.css', target)
-  FileUtils.cp('styling.html', target)
-end
-
 def generate_dashboard_json(root)
   FileUtils.chdir(root)
 
@@ -161,7 +147,7 @@ def generate_dashboard_json(root)
   vms = get_vms(data) # get latest vms
 
   # go back 7 days and round to INTERVAL
-  start = Time.now - 7 * 24 * 60 * 60
+  start = Time.now - 6 * 24 * 60 * 60  - 6 * 60 * 60
   start = start - start.to_i % (INTERVAL)
 
   json[:total] = {
@@ -193,12 +179,17 @@ def generate_dashboard_json(root)
         group: group,
         owner: owner,
         alias: get_app_info(group)[:alias],
+        count: gvms.size,
+        storage: gvms.reduce(0){|m, vm| m + vm[VM_STORAGE]}.round(0),
         cpu: get_cpu(live, stats),
         ram: get_ram(live, stats),
         disk: {read: stats.disk_read_peak_usage, write: stats.disk_write_peak_usage},
         net: {read: stats.net_read_peak_usage, write: stats.net_write_peak_usage},
         env: get_env(env)
     }
+
+    #break if json[:groups].size > 2
+
   end
   json[:groups].sort_by!{|group| -group[:cpu][:total]}
   json[:stop] = start + json[:groups].first[:cpu][:data].size * INTERVAL
