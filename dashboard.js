@@ -8,18 +8,19 @@ d3.json("dashboard.json", function(error, json) {
 
     function cpu_and_ram(group) {
         return '<tr><td></td><td>#CPU</td><td>RAM [GB]</td></tr>' +
-               '<tr><td>Total</td>' +
-                fraction(group.cpu, "CPU") +
-                fraction(group.ram, "RAM") + '</tr>' +
                '<tr><td>VM</td>' +
                 fraction(group.cpu.vm, "VM CPU") +
-                fraction(group.ram.vm, "VM RAM") + '</tr>';
+                fraction(group.ram.vm, "VM RAM") + '</tr>' +
+                '<tr><td>Total</td>' +
+                fraction(group.cpu, "CPU") +
+                fraction(group.ram, "RAM") + '</tr>';
+
     }
 
     var percent = d3.format(".1%");
     function fraction(r, type) {
         return "<td title='" + percent(r.used / r.total) + " Peak " + type + " Usage'>" +
-            r.used + " /" + r.total + "</td>";
+            r.used + "/" + r.total + "</td>";
     }
 
     function disk_and_net(group) {

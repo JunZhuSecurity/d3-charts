@@ -202,7 +202,7 @@ def generate_dashboard_json(root)
 
     owner = get_app_info(group)[:owner]
     owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| item[1].size}.last[0] if owner == ''
-    owner = 'unknown' if owner == ''
+    owner = 'unknown owner' if owner == ''
 
     os = live.group_by{|vm| vm[VM_OS]}.to_a.sort_by{|item| item[1].size}.last[0]
 
