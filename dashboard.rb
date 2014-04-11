@@ -4,7 +4,6 @@ require 'csv'
 
 require_relative 'aggregate_stats'
 require_relative 'app_info'
-require_relative 'release'
 
 # indices in vms.csv
 VM_NAME = 0
@@ -231,5 +230,6 @@ end
 if $0 == __FILE__
   json = generate_dashboard_json(File.join(__dir__, 'data'))
   File.write(File.join(__dir__, 'dashboard.json'), json)
-  #release
+
+  require_relative 'release'
 end
