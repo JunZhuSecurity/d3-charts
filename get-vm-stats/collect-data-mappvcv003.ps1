@@ -23,7 +23,6 @@ export-csv "vms_$vis.csv" -Encoding UTF8 -NoTypeInformation
 
 Write-Host "Get Live VMs"
 $live = ($vm | ?{$_.Name.ToUpper().StartsWith("L")})
-$live = ($live | ?{-not ($_.Name -eq "LCDNCSV002")}) # LCDNCSV002 seems to be defect???
 
 Write-Host "Get Live Stats"
 $stats = @{}

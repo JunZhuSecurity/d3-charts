@@ -19,18 +19,19 @@
     .col2 {width: 768px; float:left; padding: 0px 10px; }
 
     .group {font-size:36px; font-weight: bold; }
-    .owner {font-size:14px; text-align:left; margin-top: -4px; margin-bottom:12px; color:#444; }
+    .alias,
+    .owner {font-size:14px; text-align:left; color:#444; margin-top: -6px; margin-bottom:4px; }
 
-    .highlight tr:nth-child(1n + 2) td:nth-child(1n +2) {padding-right:6px; /*background: #FFFCB2;*/}  /* #fe7 */
+    .highlight tr:nth-child(1n + 2) td:nth-child(1n +2) {background: #FFF8B8;}
 
     .kpi-table {margin-top: 9px;  margin-bottom: 9px; width:100%; }
-    .kpi-table td {text-align:right;padding: 0px 5px 0px 3px; border-spacing: 4px; white-space: nowrap; vertical-align: baseline;}
-    .kpi-table td:nth-child(1n + 2) {border-left: 1px solid #ccc;}
-    .kpi-table td:nth-child(1) {font-size:12px; color: #444; text-align:left; width: 54px; }
-    .kpi-table tr:nth-child(1) {border-bottom: 1px solid #ccc; font-size:11px; color: #444;}
-    .kpi-table tr:nth-child(1n + 2) td:nth-child(1n +2) {font-weight: bold;}
-    .kpi-table.important tr:nth-child(1n + 2) td:nth-child(1n +2) {font-size: 16px; width:86px; padding-top:1px;}
-    .kpi-table.env tr:nth-child(1n + 2) td:nth-child(1n +2) {width:25%;}
+    .kpi-table td {text-align:right; padding: 0px 0px 0px 3px; border-spacing: 4px; white-space: nowrap; vertical-align: baseline;}
+    .kpi-table td:nth-child(1n + 2) {border-left: 1px solid #ccc; padding-right:5px;}
+    .kpi-table td:nth-child(1) {font-size:12px; color: #444; text-align:left; min-width:56px; width: 56px !important; max-width:56px; }
+    .kpi-table tr:nth-child(1) {border-bottom: 1px solid #ccc; font-size:11px; color: #444; }
+    .kpi-table tr:nth-child(1n + 2) td:nth-child(1n +2) {font-weight: bold; }
+    .kpi-table.important tr:nth-child(1n + 2) td:nth-child(1n +2) {font-size: 16px; width:84px; padding-top:1px; background-color: #FFF8B8;}
+    .kpi-table.env td:nth-child(1n) {width:56px;}
 
     .unit {color:#444; font-weight:normal; font-size:11px; }
 
@@ -65,31 +66,22 @@
   <div id="WEBBG" class="row">
       <div class="col1">
           <div class="group">WEBBG
-
-              <div style=" float:right; font-size:14px; margin-top:11px; margin-bottom:0px; line-height: 14px; text-align:right; /*background-color: #fe7;*/">
+              <div style="float:right; font-size:14px; margin-top:11px; margin-bottom:0px; line-height: 14px; text-align:right; /*background-color: #fe7;*/">
                   <div>34<span class="unit"> VMs</span></div>
                   <div>1600<span class="unit"> GBS</span></div>
+                  <div class="unit">Windows 8.1</div>
               </div>
-
           </div>
-          <div class="owner">www.autoscout24.be: PrivateBuyer</div>
+          <div class="alias">www.autoscout24.be</div>
+          <div class="owner">Private Buyer</div>
 
-          <!--<table class="summary" >-->
-              <!--<tr>-->
-                  <!--<td title="Total number of VMs">15<span class="unit"> VM</span></td>-->
-                  <!--<td title="Total GB Storage">1600<span class="unit"> GB</span><span style="font-weight: normal"> Storage</span> </td>-->
-                  <!--&lt;!&ndash;<td title="Peak Live Ram Usage">37%<span class="unit"> Cpu</span></td>&ndash;&gt;-->
-                  <!--&lt;!&ndash;<td title="Peak Live Ram Usage">33%<span class="unit"> Ram</span></td>&ndash;&gt;-->
-              <!--</tr>-->
-          <!--</table>-->
-
-          <table class="kpi-table important" title="Peak LIVE Usage" >
+          <table class="kpi-table important highlight" title="Peak LIVE Usage" >
               <tr><td></td><td>#CPU</td><td>RAM [GB]</td></tr>
               <tr><td>Total</td><td>102/600</td><td>800/1600</td></tr>
               <tr><td>VM</td><td title="Peak Usage 37%">3.2/8</td><td>4/12</td></tr>
           </table>
 
-          <table class="kpi-table important" >
+          <table class="kpi-table important highlight" >
               <tr><td></td><td>Disk [MB/s]</td><td>Net [MBit/s]</td></tr>
               <tr><td>In</td><td>3.2</td><td>12</td></tr>
               <tr><td>Out</td><td>102</td><td>100</td></tr>
