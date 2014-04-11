@@ -192,7 +192,7 @@ def generate_dashboard_json(root)
   groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
-  json[:groups] = groups.map do |group, gvms|
+  json[:groups] = groups.take(3).map do |group, gvms|
 
     env = {}
     ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}

@@ -23,6 +23,25 @@ ENVIRONMENTS = {
     :other => /^[^LRDC]/i
 }
 
+def get_short_os(os)
+  case os
+    when /windows server 2012/i    then 'Win2012'
+    when /windows server 2008 r2/i then 'Win2008R2'
+    when /windows server 2008/i    then 'Win2008'
+    when /windows server 2003/i    then 'Win2003'
+    when /windows 8/i              then 'Windows 8'
+    when /windows 7/i              then 'Windows 7'
+    when /windows xp/i             then 'Windows XP'
+    when /red hat .* linux 6/i     then 'RHE Linux 6'
+    when /red hat .* linux 5/i     then 'RHE Linux 5'
+    when /ubuntu/i                 then 'Ubuntu Linux'
+    when /centos/i                 then 'CentOS'
+    when /linux/i                  then 'Linux'
+
+    else 'Other'
+  end
+end
+
 def get_vms(folder)
   vms = %w(vms_mappvcv003.csv vms_mappvck003.csv).reduce([]) do |vms, csv|
     vms.concat CSV.read(File.join(folder, csv), 'r:bom|utf-8')[1..-1]
@@ -39,21 +58,6 @@ end
 def select_env_vms(env, vms)
   env_pattern = ENVIRONMENTS[env]
   vms.select{|vm| vm[VM_NAME] =~ env_pattern}
-end
-
-def get_cpu(vms, stats)
-  {
-      used: stats.cpu_peak_usage,
-      total: vms.reduce(0){|cpu, vm| cpu + vm[VM_CPU]},
-      data: stats.cpu_data
-  }
-end
-
-def get_ram(vms, stats)
-  {
-    used: stats.ram_peak_usage,
-    total: (vms.reduce(0){|ram, vm| ram + vm[VM_RAM]} / vms.count).round(1)
-  }
 end
 
 def get_env(environments)
@@ -171,8 +175,8 @@ def generate_dashboard_json(root)
   data = data.sort.last
   vms = get_vms(data) # get latest vms
 
-  oses = vms.map{|vm| vm[VM_OS] || "other"}.group_by{|os| os.downcase}.map{|k,v|[k, v.size]}.sort_by{|item| -item[1]}
-  puts oses.inspect
+  #oses = vms.map{|vm| vm[VM_OS] || "other"}.group_by{|os| os.downcase}.map{|k,v|[k, v.size]}.sort_by{|item| -item[1]}
+  #puts oses.inspect
 
   # go back 7 days and round to INTERVAL
   start = Time.now - 6 * 24 * 60 * 60  - 6 * 60 * 60
@@ -192,7 +196,7 @@ def generate_dashboard_json(root)
   groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
-  json[:groups] = groups.map do |group, gvms|
+  json[:groups] = groups.take(3).map do |group, gvms|
 
     env = {}
     ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
@@ -213,7 +217,7 @@ def generate_dashboard_json(root)
 
         total: gvms.size,
         storage: gvms.reduce(0){|m, vm| m + vm[VM_STORAGE]}.round(0),
-        os: os,
+        os: [os, get_short_os(os)],
 
         cpu: stats.cpu,
         ram: stats.ram,
@@ -233,5 +237,5 @@ if $0 == __FILE__
   json = generate_dashboard_json(File.join(__dir__, 'data'))
   File.write(File.join(__dir__, 'dashboard.json'), json)
 
-  require_relative 'release'
+  #require_relative 'release'
 end
