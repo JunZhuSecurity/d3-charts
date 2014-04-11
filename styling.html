@@ -19,8 +19,10 @@
     .col2 {width: 768px; float:left; padding: 0px 10px; }
 
     .group {font-size:36px; font-weight: bold; }
+    .group .summary {float:right; font-size:14px; margin-top:9px; margin-bottom:0px; line-height: 14px; text-align:right;}
     .alias,
     .owner {font-size:14px; text-align:left; color:#444; margin-top: -6px; margin-bottom:4px; }
+    .unit {color:#444; font-weight:normal; font-size:11px; }
 
     .highlight tr:nth-child(1n + 2) td:nth-child(1n +2) {background: #FFF8B8;}
 
@@ -32,8 +34,6 @@
     .kpi-table tr:nth-child(1n + 2) td:nth-child(1n +2) {font-weight: bold; }
     .kpi-table.important tr:nth-child(1n + 2) td:nth-child(1n +2) {font-size: 16px; width:84px; padding-top:1px; background-color: #FFF8B8;}
     .kpi-table.env td:nth-child(1n) {width:56px;}
-
-    .unit {color:#444; font-weight:normal; font-size:11px; }
 
   </style>
 
@@ -66,7 +66,7 @@
   <div id="WEBBG" class="row">
       <div class="col1">
           <div class="group">WEBBG
-              <div style="float:right; font-size:14px; margin-top:11px; margin-bottom:0px; line-height: 14px; text-align:right; /*background-color: #fe7;*/">
+              <div class="summary">
                   <div>34<span class="unit"> VMs</span></div>
                   <div>1600<span class="unit"> GBS</span></div>
                   <div class="unit">Windows 8.1</div>

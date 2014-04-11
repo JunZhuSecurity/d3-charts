@@ -192,7 +192,7 @@ def generate_dashboard_json(root)
   groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
-  json[:groups] = groups.take(2).map do |group, gvms|
+  json[:groups] = groups.map do |group, gvms|
 
     env = {}
     ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
@@ -202,17 +202,19 @@ def generate_dashboard_json(root)
 
     owner = get_app_info(group)[:owner]
     owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| item[1].size}.last[0] if owner == ''
-    owner = 'unknown' if owner == ''
+    owner = 'unknown owner' if owner == ''
 
     os = live.group_by{|vm| vm[VM_OS]}.to_a.sort_by{|item| item[1].size}.last[0]
 
     {
         group: group,
-        owner: owner,
         alias: get_app_info(group)[:alias],
-        os: os,
-        count: gvms.size,
+        owner: owner,
+
+        total: gvms.size,
         storage: gvms.reduce(0){|m, vm| m + vm[VM_STORAGE]}.round(0),
+        os: os,
+
         cpu: stats.cpu,
         ram: stats.ram,
         disk: stats.disk,

@@ -1,24 +1,31 @@
 d3.json("dashboard.json", function(error, json) {
 
-    function append_kpi(row, tip, html) {
-        row.append("div").attr("class", "kpi").attr("title", "Peak " + tip + " usage last 7 days").html(html);
+    function summary(group) {
+        return '<div>' + group.total +'<span class="unit"> VMs</span></div>' +
+               '<div>' + group.storage + '<span class="unit"> GBS</span></div>' +
+               '<div class="unit">' + 'Windows 8.1' + ' </div>';
     }
 
-    function append_kpi_space(row) {
-        row.append("div").attr("class", "kpi-space");
+    function cpu_and_ram(group) {
+        return '<tr><td></td><td>#CPU</td><td>RAM [GB]</td></tr>' +
+               '<tr><td>Total</td>' +
+                fraction(group.cpu, "CPU") +
+                fraction(group.ram, "RAM") + '</tr>' +
+               '<tr><td>VM</td>' +
+                fraction(group.cpu.vm, "VM CPU") +
+                fraction(group.ram.vm, "VM RAM") + '</tr>';
     }
 
-    function kpi_usage(title, used, total) {
-        var percent = Math.round(used / total * 100);
-        var value = used + "/" + total;
-        return '<div class="sub-value">' + percent + '%</div>' +
-               '<div class="title">' + title + '</div>' +
-               '<div class="value">' + value + '</div>';
+    var percent = d3.format(".1%");
+    function fraction(r, type) {
+        return "<td title='" + percent(r.used / r.total) + " Peak " + type + " Usage'>" +
+            r.used + " /" + r.total + "</td>";
     }
 
-    function kpi_io(title, read, write) {
-        return '<div class="title">' + title + '</div>' +
-               '<div class="value">' + write + '<span class="read">' + read + '</span></div>';
+    function disk_and_net(group) {
+        return '<tr><td></td><td>Disk [MB/s]</td><td>Net [MBit/s]</td></tr>' +
+               '<tr><td>In</td><td>' + group.disk.in + '</td><td>' + group.net.in + '</td></tr>' +
+               '<tr><td>Out</td><td>' + group.disk.out + '</td><td>' + group.net.out + '</td></tr>';
     }
 
     function cpu_chart(chart) {
@@ -88,30 +95,27 @@ d3.json("dashboard.json", function(error, json) {
     var groups = d3.select("#Groups").selectAll("div.row").data(json.groups).enter();
 
     var group = groups.append("div").attr("class", "row").attr("id", function(d){return d.group;});
-    var kpis = group.append("div").attr("class", "col-md-3");
-    kpis.append("div").attr("class", "vmgroup").text(function(d){return d.group;});
-    kpis.append("div").attr("class", "owner").text(function(d) {return d.alias + ": " + d.owner;});
+    var col1 = group.append("div").attr("class", "col1");
+    col1.append("div").attr("class", "group").text(function(d){return d.group;})
+        .append("div").attr("class", "summary").html(summary);
+    col1.append("div").attr("class", "alias").text(function(d) {return d.alias;});
+    col1.append("div").attr("class", "owner").text(function(d) {return d.owner;});
 
-    var row = kpis.append("div").attr("class", "kpi-row");
-    append_kpi(row, "CPU", function(d){return kpi_usage("CPU", d.cpu.used, d.cpu.total);});
-    append_kpi_space(row);
-    append_kpi(row, "RAM [GiB]", function(d){return kpi_usage("RAM [GiB]", d.ram.used, d.ram.total);});
+    col1.append("table").attr("class", "kpi-table important highlight").attr("title", "Peak LIVE Usage")
+        .html(cpu_and_ram);
+    col1.append("table").attr("class", "kpi-table important highlight").attr("title", "Peak LIVE Usage")
+        .html(disk_and_net);
 
-    row = kpis.append("div").attr("class", "kpi-row");
-    append_kpi(row, "Disk IO [MB/s]", function(d) {return kpi_io('Disk IO [MB/s]', d.disk.read, d.disk.write)});
-    append_kpi_space(row);
-    append_kpi(row, "Net IO [MB/s]", function(d) {return kpi_io('Net IO [MB/s]', d.net.read, d.net.write)});
-
-    var env_table = kpis.append("table").attr("class", "env");
+    var env_table = col1.append("table").attr("class", "kpi-table env");
     var env = env_table.selectAll("tr").data(function(d){return d.env;}).enter();
-    env_table.append("tr").html("<td></td><td>VMs</td><td>CPUs</td><td>RAM [GiB]</td>");
+    env_table.append("tr").html("<td></td><td>#VM</td><td>#CPU</td><td>RAM [GB]</td>");
 
     var env_row = env.append("tr");
     for (var i = 0; i < 4; i += 1) {
         env_row.append("td").text(function(d){return d[i];});
     }
 
-    var chart = group.append("div").attr("class", "col-md-9");
+    var chart = group.append("div").attr("class", "col2");
     cpu_chart(chart);
 
 });
