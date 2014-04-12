@@ -139,20 +139,17 @@ class GroupStats
   end
 
   def disk
-    io(S_DISK_IN)
+    {read: peak_usage(S_DISK_IN),
+     wrote: peak_usage(S_DISK_OUT),
+     data_read: data(S_DISK_IN),
+     data_wrote: data(S_DISK_OUT)}
   end
 
   def net
-    io(S_NET_IN)
-  end
-
-  def io(type)
-    {
-      in: peak_usage(type),
-      out: peak_usage(type + 1),
-      data_in: data(type),
-      data_out: data(type + 1)
-    }
+    {received: peak_usage(S_NET_IN),
+     sent: peak_usage(S_NET_OUT),
+     data_received: data(S_NET_IN),
+     data_sent: data(S_NET_OUT)}
   end
 
   def data(type)
@@ -179,7 +176,7 @@ def generate_dashboard_json(root)
   #puts oses.inspect
 
   # go back 7 days and round to INTERVAL
-  start = Time.now - 6 * 24 * 60 * 60  - 6 * 60 * 60
+  start = Time.now - (7 * 24 * 60 * 60 + 6 * 60 * 60)
   start = start - start.to_i % (INTERVAL)
 
   json[:total] = {
@@ -196,7 +193,7 @@ def generate_dashboard_json(root)
   groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
-  json[:groups] = groups.take(3).map do |group, gvms|
+  json[:groups] = groups.take(5).map do |group, gvms|
 
     env = {}
     ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}

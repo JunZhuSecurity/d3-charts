@@ -20,22 +20,38 @@ svg {margin: 4px;}
     stroke-width: 1px;
 }
 
-.cpu-line {
+.line {
+    fill: none;
+    stroke: black;
+    stroke-width: 1;
+}
+
+.line.cpu {
   fill: none;
   stroke: hsl(132, 100%, 25%);
-  stroke-width: 1.5px;
+  stroke-width: 1.5;
 }
 
-.ram-line {
-  fill: none;
-  stroke: hsl(220, 100%, 25%);
-  stroke-width: 1.5px;
+.line.ram {
+  stroke: rgb(117, 117, 216);
 }
 
-.cpu {
-    fill: green;
-    stroke: none;
-    stroke-width: 0px;
-    shape-rendering: crispEdges;
+.line.received {
+  stroke: yellow;
 }
+
+.line.sent {
+  stroke: #AC3E00;
+}
+
+.line.read {
+  stroke: blue;
+}
+
+.line.wrote {
+  stroke: darkblue;
+}
+
+
+
 

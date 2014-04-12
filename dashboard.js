@@ -25,14 +25,8 @@ d3.json("dashboard.json", function(error, json) {
 
     function disk_and_net(group) {
         return '<tr><td></td><td>Disk [MB/s]</td><td>Net [MBit/s]</td></tr>' +
-               '<tr><td>In</td><td>' + group.disk.in + '</td><td>' + group.net.in + '</td></tr>' +
-               '<tr><td>Out</td><td>' + group.disk.out + '</td><td>' + group.net.out + '</td></tr>';
-    }
-
-    function test(selection) {
-        selection.each(function (d){
-            console.log(this.parentNode.offsetHeight);
-        });
+               '<tr><td>Read</td><td>' + group.disk.read + '</td><td>' + group.net.received + '</td></tr>' +
+               '<tr><td>Wrote</td><td>' + group.disk.wrote + '</td><td>' + group.net.sent + '</td></tr>';
     }
 
     function cpu_chart(chart) {
@@ -47,14 +41,13 @@ d3.json("dashboard.json", function(error, json) {
 
         function get_height(d) {
             d.height = this.parentNode.parentNode.offsetHeight - 8;
+            d.height /= 1;
             return d.height;
         }
 
         function translate(d) {
             return "translate(0, " + (d.height - margin.top - margin.bottom) + ")";
         }
-
-        chart.call(test);
 
         chart = chart.append('svg:svg')
             .attr("width", width + margin.left + margin.right)
@@ -69,7 +62,10 @@ d3.json("dashboard.json", function(error, json) {
 
         // attach scaleY
         json.groups.forEach(function(group){
-            group.cpu.scaleY = d3.scale.linear().domain([0, Math.round(+group.cpu.used + 0.6)]).range([group.height - margin.top - margin.bottom, 0]);
+            group.cpu.scaleY = d3.scale.linear().domain([0, group.cpu.used]).range([group.height - margin.top - margin.bottom - 75, 0]);
+            group.ram.scaleY = d3.scale.linear().domain([0, group.ram.used]).range([group.height - margin.top - margin.bottom - 50, 50]);
+            group.net.scaleY = d3.scale.linear().domain([0,d3.max([group.net.received, group.net.sent])]).range([group.height - margin.top - margin.bottom - 25, 100]);
+            group.disk.scaleY = d3.scale.linear().domain([0,d3.max([group.disk.read, group.net.wrote])]).range([group.height - margin.top - margin.bottom - 0, 150]);
         });
 
         function yAxisGenerator(selection) {
@@ -89,14 +85,42 @@ d3.json("dashboard.json", function(error, json) {
             .interpolate("basis")
             .x(function(d, i) {return scaleX(json.start + json.interval * i); });
 
-        function cpu_line_generator(group) {
+        function cpu_line(group) {
             line.y(function(d){return group.cpu.scaleY(d);});
             return line(group.cpu.data);
         }
 
-        chart.append("path")
-             .attr("class", "cpu-line")
-             .attr("d", cpu_line_generator);
+        function ram_line(group) {
+            line.y(function(d){return group.ram.scaleY(d);});
+            return line(group.ram.data);
+        }
+
+        function received_line(group) {
+            line.y(function(d){return group.net.scaleY(d);});
+            return line(group.net.data_received);
+        }
+
+        function sent_line(group) {
+            line.y(function(d){return group.net.scaleY(d);});
+            return line(group.net.data_sent);
+        }
+
+        function read_line(group) {
+            line.y(function(d){return group.disk.scaleY(d);});
+            return line(group.disk.data_read);
+        }
+
+        function wrote_line(group) {
+            line.y(function(d){return group.disk.scaleY(d);});
+            return line(group.disk.data_wrote);
+        }
+
+        chart.append("path").attr("class", "line read").attr("d", read_line);
+        chart.append("path").attr("class", "line wrote").attr("d", wrote_line);
+        chart.append("path").attr("class", "line received").attr("d", received_line);
+        chart.append("path").attr("class", "line sent").attr("d", sent_line);
+        chart.append("path").attr("class", "line ram").attr("d", ram_line);
+        chart.append("path").attr("class", "line cpu").attr("d", cpu_line);
     }
 
     d3.select('#Updated').text(json.stop);
