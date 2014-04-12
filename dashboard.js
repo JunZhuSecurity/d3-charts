@@ -62,10 +62,10 @@ d3.json("dashboard.json", function(error, json) {
 
         // attach scaleY
         json.groups.forEach(function(group){
-            group.cpu.scaleY = d3.scale.linear().domain([0, group.cpu.used]).range([group.height - margin.top - margin.bottom - 75, 0]);
-            group.ram.scaleY = d3.scale.linear().domain([0, group.ram.used]).range([group.height - margin.top - margin.bottom - 50, 50]);
-            group.net.scaleY = d3.scale.linear().domain([0,d3.max([group.net.received, group.net.sent])]).range([group.height - margin.top - margin.bottom - 25, 100]);
-            group.disk.scaleY = d3.scale.linear().domain([0,d3.max([group.disk.read, group.net.wrote])]).range([group.height - margin.top - margin.bottom - 0, 150]);
+            group.cpu.scaleY = d3.scale.linear().domain([0, group.cpu.used]).range([group.height - margin.top - margin.bottom, 0]);
+            group.ram.scaleY = d3.scale.linear().domain([0, group.ram.used]).range([group.height - margin.top - margin.bottom, 50]);
+            group.net.scaleY = d3.scale.linear().domain([0,d3.max([group.net.received, group.net.sent])]).range([group.height - margin.top - margin.bottom, 100]);
+            group.disk.scaleY = d3.scale.linear().domain([0,d3.max([group.disk.read, group.net.wrote])]).range([group.height - margin.top - margin.bottom, 150]);
         });
 
         function yAxisGenerator(selection) {
