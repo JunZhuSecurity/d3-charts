@@ -3,7 +3,7 @@ d3.json("dashboard.json", function(error, json) {
     function summary(group) {
         return '<div>' + group.total +'<span class="unit"> VMs</span></div>' +
                '<div>' + group.storage + '<span class="unit"> GBS</span></div>' +
-               '<div class="unit">' + group.os[1] + ' </div>';
+               '<div class="unit" title="' + group.os[0] + '">' + group.os[1] + ' </div>';
     }
 
     function cpu_and_ram(group) {
@@ -29,16 +29,15 @@ d3.json("dashboard.json", function(error, json) {
                '<tr><td>Out</td><td>' + group.disk.out + '</td><td>' + group.net.out + '</td></tr>';
     }
 
-    function test(a, b, c) {
-        console.log(a);
-        console.log(b);
-        console.log(this);
+    function test(selection) {
+        selection.each(function (d){
+            console.log(this.parentNode.offsetHeight);
+        });
     }
 
     function cpu_chart(chart) {
         var margin = {top: 20, right: 20, bottom: 20, left: 30};
-        var width = 730 - margin.left - margin.right;
-        var height = 270 - margin.top - margin.bottom;
+        var width = 760 - margin.left - margin.right;
 
         // shared X-Axis
         var scaleX = d3.time.scale.utc()
@@ -46,31 +45,31 @@ d3.json("dashboard.json", function(error, json) {
 
         var xAxis = d3.svg.axis().scale(scaleX).orient("bottom");
 
-        function get_height() {
-            console.log(this.parentNode);
-            return this.parentNode.offsetHeight - 10;
+        function get_height(d) {
+            d.height = this.parentNode.parentNode.offsetHeight - 8;
+            return d.height;
         }
 
-        function get_x_offset(d) {
-            d.height = this.parentNode.offsetHeight - 10 - margin.top - margin.bottom;
-            return "translate(0, " + d.height + ")";
+        function translate(d) {
+            return "translate(0, " + (d.height - margin.top - margin.bottom) + ")";
         }
+
+        chart.call(test);
 
         chart = chart.append('svg:svg')
             .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            .attr("height", 1).attr("height", get_height)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         chart.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(0, " + height + ")")
-            //.attr("transform", get_x_offset)
+            .attr("transform", translate)
             .call(xAxis);
 
         // attach scaleY
         json.groups.forEach(function(group){
-            group.cpu.scaleY = d3.scale.linear().domain([0, Math.round(+group.cpu.used + 0.6)]).range([height, 0]);
+            group.cpu.scaleY = d3.scale.linear().domain([0, Math.round(+group.cpu.used + 0.6)]).range([group.height - margin.top - margin.bottom, 0]);
         });
 
         function yAxisGenerator(selection) {
