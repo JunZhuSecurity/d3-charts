@@ -5,15 +5,6 @@ require 'csv'
 require_relative 'aggregate_stats'
 require_relative 'app_info'
 
-# indices in vms.csv
-VM_NAME = 0
-VM_CPU = 1
-VM_RAM = 2      #GiB
-VM_STORAGE = 3  #GiB
-VM_HOST = 4
-VM_OS = 5
-VM_OWNER = 6
-
 ENVIRONMENTS = {
     :live => /^L.*[^K]\d\d\d$/i,
     :kfall => /^L.*K\d\d\d$/i,
@@ -199,7 +190,7 @@ def generate_dashboard_json(root)
     ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
     live = env[:live]
 
-    stats = GroupStats.new('.', live, start)
+    stats = GroupStats.new('.', live + env[:kfall], start)
 
     owner = get_app_info(group)[:owner]
     owner = live.group_by{|vm| vm[VM_OWNER]}.to_a.sort_by{|item| item[1].size}.last[0] if owner == ''
