@@ -115,10 +115,10 @@ d3.json("dashboard.json", function(error, json) {
             return line(group.disk.data_wrote);
         }
 
-        chart.append("path").attr("class", "line read").attr("d", read_line);
-        chart.append("path").attr("class", "line wrote").attr("d", wrote_line);
-        chart.append("path").attr("class", "line received").attr("d", received_line);
-        chart.append("path").attr("class", "line sent").attr("d", sent_line);
+        chart.append("path").attr("class", "line net in").attr("d", received_line);
+        chart.append("path").attr("class", "line net out").attr("d", sent_line);
+        chart.append("path").attr("class", "line disk in").attr("d", read_line);
+        chart.append("path").attr("class", "line disk out").attr("d", wrote_line);
         chart.append("path").attr("class", "line ram").attr("d", ram_line);
         chart.append("path").attr("class", "line cpu").attr("d", cpu_line);
     }

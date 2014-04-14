@@ -1,15 +1,15 @@
 
-svg {margin: 4px;}
+svg {margin: 4px; }
 
 .axis text {
-  font-size: 11px;
-  fill: #111;
+  font-size: 10px;
+  fill: #444;
 }
 
 .axis path,
 .axis line {
   fill: none;
-  stroke: #222;
+  stroke: #444;
   shape-rendering: crispEdges;
 }
 
@@ -23,34 +23,19 @@ svg {margin: 4px;}
 .line {
     fill: none;
     stroke: black;
-    stroke-width: 1;
+    stroke-width: 0.8px;
 }
 
-.line.cpu {
-  fill: none;
-  stroke: hsl(132, 100%, 25%);
-  stroke-width: 1.5;
-}
+/* Color Palette */
 
-.line.ram {
-  stroke: rgb(117, 117, 216);
-}
+.line.cpu { stroke: hsla(140, 100%, 41%, 0.8); stroke-width: 2px; }
+.line.ram { stroke: hsla(220, 100%, 48%, 0.8); stroke-width: 1.5px; }
 
-.line.received {
-  stroke: yellow;
-}
+.line.disk.in { stroke: hsla(33, 100%, 45%, 0.9); }
+.line.disk.out { stroke: hsla(333, 95%, 40%, 0.9); }
 
-.line.sent {
-  stroke: #AC3E00;
-}
-
-.line.read {
-  stroke: blue;
-}
-
-.line.wrote {
-  stroke: darkblue;
-}
+.line.net.in { stroke: hsla(180, 100%, 45%, 1); }
+.line.net.out { stroke: hsla(270, 100%, 50%, 1); }
 
 
 
