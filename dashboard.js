@@ -23,13 +23,15 @@ d3.json("dashboard.json", function(error, json) {
             r.used + "/" + r.total + "</td>";
     }
 
+
+    var precision = d3.format(".1f") ;
     function disk_and_net(group) {
         return '<tr><td></td><td>Disk [MB/s]</td><td>Net [MBit/s]</td></tr>' +
-               '<tr><td>Read</td><td>' + group.disk.read + '</td><td>' + group.net.received + '</td></tr>' +
-               '<tr><td>Wrote</td><td>' + group.disk.wrote + '</td><td>' + group.net.sent + '</td></tr>';
+               '<tr><td>Read</td><td>' + precision(group.disk.read) + '</td><td>' + precision(group.net.received) + '</td></tr>' +
+               '<tr><td>Wrote</td><td>' + precision(group.disk.wrote) + '</td><td>' + precision(group.net.sent) + '</td></tr>';
     }
 
-    function cpu_chart(chart) {
+    function create_chart(chart) {
         var margin = {top: 20, right: 20, bottom: 20, left: 30};
         var width = 760 - margin.left - margin.right;
 
@@ -115,12 +117,64 @@ d3.json("dashboard.json", function(error, json) {
             return line(group.disk.data_wrote);
         }
 
+        // chart.append("path").attr("class", "line net in").attr("d", received_line);
+//        chart.append("path").attr("class", "line net out").attr("d", sent_line);
+//        chart.append("path").attr("class", "line disk in").attr("d", read_line);
+//        chart.append("path").attr("class", "line disk out").attr("d", wrote_line);
+        chart.append("path").attr("class", "line ram").attr("d", ram_line);
+        chart.append("path").attr("class", "line cpu").attr("d", cpu_line);
+    }
+
+    function create_show_all(chart) {
+        var margin = {top: 20, right: 20, bottom: 20, left: 30};
+        var width = 760 - margin.left - margin.right;
+
+        // shared X-Axis
+        var scaleX = d3.time.scale.utc()
+            .domain([json.start, json.stop]).range([0, width]);
+
+        var xAxis = d3.svg.axis().scale(scaleX).orient("bottom");
+
+        function get_height(d) {
+            d.height = this.parentNode.parentNode.offsetHeight - 8;
+            d.height /= 1;
+            return d.height;
+        }
+
+        function translate(d) {
+            return "translate(0, " + (d.height - margin.top - margin.bottom) + ")";
+        }
+
+        chart = chart.select("svg g");
+
+        var line = d3.svg.line()
+            .interpolate("basis")
+            .x(function(d, i) {return scaleX(json.start + json.interval * i); });
+
+        function received_line(group) {
+            line.y(function(d){return group.net.scaleY(d);});
+            return line(group.net.data_received);
+        }
+
+        function sent_line(group) {
+            line.y(function(d){return group.net.scaleY(d);});
+            return line(group.net.data_sent);
+        }
+
+        function read_line(group) {
+            line.y(function(d){return group.disk.scaleY(d);});
+            return line(group.disk.data_read);
+        }
+
+        function wrote_line(group) {
+            line.y(function(d){return group.disk.scaleY(d);});
+            return line(group.disk.data_wrote);
+        }
+
         chart.append("path").attr("class", "line net in").attr("d", received_line);
         chart.append("path").attr("class", "line net out").attr("d", sent_line);
         chart.append("path").attr("class", "line disk in").attr("d", read_line);
         chart.append("path").attr("class", "line disk out").attr("d", wrote_line);
-        chart.append("path").attr("class", "line ram").attr("d", ram_line);
-        chart.append("path").attr("class", "line cpu").attr("d", cpu_line);
     }
 
     d3.select('#Updated').text(json.stop);
@@ -155,7 +209,18 @@ d3.json("dashboard.json", function(error, json) {
     }
 
     var chart = group.append("div").attr("class", "col2");
-    cpu_chart(chart);
+    create_chart(chart);
+
+    d3.select("#Please_Wait").remove();
+
+    // Hack for showing everything
+    var show_all_called = false;
+    d3.select("#show_all").on("click", function() {
+        if (!show_all_called) {
+            create_show_all(chart);
+            show_all_called = true;
+        }
+    });
 
 });
 

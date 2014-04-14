@@ -6,6 +6,8 @@ svg {margin: 4px; }
   fill: #444;
 }
 
+.axis .label {fill: hsl(140, 100%, 41%)}
+
 .axis path,
 .axis line {
   fill: none;
@@ -27,6 +29,7 @@ svg {margin: 4px; }
 }
 
 /* Color Palette */
+/* use bootstrap colors? http://getbootstrap.com/css/#buttons */
 
 .line.cpu { stroke: hsla(140, 100%, 41%, 0.8); stroke-width: 2px; }
 .line.ram { stroke: hsla(220, 100%, 48%, 0.8); stroke-width: 1.5px; }

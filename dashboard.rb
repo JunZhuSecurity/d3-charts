@@ -114,7 +114,7 @@ class GroupStats
 
   def used_total(type, total, vm_used, vm_total)
     {
-        used: peak_usage(type),
+        used: peak_usage(type).ceil,
         total: total,
         vm: {
             used:  vm_used.round(1),
@@ -178,7 +178,8 @@ def generate_dashboard_json(root)
   groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
-  json[:groups] = groups.select{|group, gg| group =~ /WEBDE|ELAVM/}.map do |group, gvms|
+  #json[:groups] = groups.select{|group, gg| group =~ /WEBDE|ELAVM/}.map do |group, gvms|
+  json[:groups] = groups.map do |group, gvms|
 
     env = {}
     ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
@@ -219,5 +220,5 @@ if $0 == __FILE__
   json = generate_dashboard_json(File.join(__dir__, 'data'))
   File.write(File.join(__dir__, 'dashboard.json'), json)
 
-  #require_relative 'release'
+  require_relative 'release'
 end
