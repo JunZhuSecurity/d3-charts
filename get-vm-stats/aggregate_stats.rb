@@ -2,6 +2,11 @@
 require 'csv'
 require 'fileutils'
 require 'time'
+require 'set'
+
+ONE_HOUR = 60 * 60
+ONE_DAY =  24 * ONE_HOUR
+INTERVAL = 0.5 * ONE_HOUR
 
 S_TIME = 0
 S_CPU = 1
@@ -20,7 +25,23 @@ METRIC[S_DISK_OUT] = 'disk.write.average'
 METRIC[S_NET_IN] = 'net.received.average'
 METRIC[S_NET_OUT] = 'net.transmitted.average'
 
-INTERVAL = 30 * 60
+# indices in vms_yyy-mm-dd.csv
+VM_NAME = 0
+VM_CPU = 1
+VM_RAM = 2      #GiB
+VM_STORAGE = 3  #GiB
+VM_HOST = 4
+VM_OS = 5
+VM_OWNER = 6
+
+# VMS History
+VMS_DATE = 0
+VMS_VM = 1
+VMS_CPU = 2
+VMS_RAM = 3
+VMS_STORAGE = 4
+VMS_VM_ADDED = 5
+VMS_VM_REMOVED = 6
 
 # Source Format
 # key1, TimeStamp, value
@@ -99,25 +120,76 @@ def aggregate_machine(input)
 
 end
 
+def aggregate_all(root)
+  FileUtils.mkpath(File.join(root, 'stats')) unless Dir.exists?(File.join(root, 'stats'))
+  raw_data_folders(root).each do |folder|
+    aggregate_folder(folder)
+  end
+  aggregate_vms(root)
+end
+
+def aggregate_newest(root)
+  raw_data_folders(root)[-3..-1].each do |folder|
+    aggregate_folder(folder)
+  end
+  aggregate_vms(root)
+end
+
 def aggregate_folder(folder)
   Dir.glob(File.join(folder, 'L*.csv')) do |file|
     aggregate_machine(file)
   end
 end
 
-def aggregate_all(root)
-  FileUtils.mkpath(File.join(root, 'stats')) unless Dir.exists?(File.join(root, 'stats'))
-  folders = Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /\/\d{4}-\d{2}-\d{2}$/}
-  folders.sort.each do |folder|
-    aggregate_folder(folder)
+def aggregate_vms(root)
+  stats = File.join(root, 'stats/vms')
+  vms_csv = File.join(stats, 'vms.csv')
+  FileUtils.mkpath(stats) unless Dir.exists?(stats)
+  filename = ->(folder) {File.join(stats, "vms_#{File.basename(folder)}.csv")}
+
+  last_folder = File.size?(vms_csv) ? File.join(root, File.readlines(vms_csv).last.split(',')[0]) : nil
+
+  raw_data_folders(root).drop_while{|f| last_folder && f <= last_folder}.each do |folder|
+    vms = %w(vms_mappvcv003.csv vms_mappvck003.csv).reduce([]) do |vms, csv|
+      vms.concat(CSV.read(File.join(folder, csv), 'r:bom|utf-8').drop(1))
+    end
+    vms.map do |vm|
+      [VM_NAME, VM_OS, VM_OWNER, VM_HOST].each{|c| (vm[c] || '').gsub!(',', ' ')} # escape ','
+      vm[VM_NAME].upcase!
+      vm[VM_RAM] = '%g' % (vm[VM_RAM].to_f / 1024).round(1)
+      vm[VM_STORAGE] = vm[VM_STORAGE].to_f.round(8)
+    end
+    vms = vms.sort_by {|vm| vm[VM_NAME]}
+
+    File.open(filename.call(folder), 'w') do |file|
+      vms.each{|vm| file.puts(vm.join(','))}
+    end
+
+    File.open(vms_csv, 'a+') do |file|
+      current = vms.map{|vm| vm[VM_NAME]}.to_set
+      last = last_folder ? read_vms(filename.call(last_folder)).map{|vm| vm[VM_NAME]}.to_set : current
+      puts "#{last_folder}: #{last.size}"
+      row = []
+      row[VMS_DATE] = File.basename(folder)
+      row[VMS_VM] = vms.size
+      row[VMS_CPU] = vms.reduce(0){|result, vm| result + vm[VM_CPU].to_i}
+      row[VMS_RAM] = vms.reduce(0){|result, vm| result + vm[VM_RAM].to_f}.ceil
+      row[VMS_STORAGE] = vms.reduce(0){|result, vm| result + vm[VM_STORAGE].to_f}.ceil
+      row[VMS_VM_ADDED] = (current - last).size
+      row[VMS_VM_REMOVED] = (last - current).size
+      file.puts(row.join(','))
+    end
+    last_folder = folder
   end
 end
 
-def aggregate_newest(root)
-  folders = Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /\/\d{4}-\d{2}-\d{2}$/}
-  folders.sort[-2..-1].each do |folder|
-    aggregate_folder(folder)
-  end
+def read_vms(file)
+  return nil unless File.exists?(file)
+  File.readlines(file).each.map{|line| line.split(',')}
+end
+
+def raw_data_folders(root)
+  Dir.glob(File.join(root, '*')).select{|e|File.directory?(e) && e =~ /\/\d{4}-\d{2}-\d{2}$/}.sort
 end
 
 def get_stats(file, start)
@@ -150,30 +222,14 @@ def get_stats(file, start)
   result
 end
 
-
 if $0 == __FILE__
-
   root = File.join(__dir__, 'data')
-  #aggregate_folder(File.join(root, '2014-04-03'))
-  aggregate_all(root)
 
-  #start = Time.now - 1 * 24 * 60 * 60
-  #start = start - start.to_i % (INTERVAL)
-  #puts get_stats(File.join(root, 'stats/LELAVMV004.csv'), start).inspect
+  aggregate_newest(root)
 
+  #aggregate_vms(File.join(root, '2014-04-07'))
 
-#start = Time.parse('2014-03-31 08:00:00') + 3600
-#puts start
-#
-#stats = Hash.new{|hash, key| hash[key] = []}
-#input = File.join(__dir__, 'data', '2014-04-01', 'LADMADK001' + '.csv')
-#CSV.read(input, 'r:bom|utf-8').drop(1).each do |row|
-#  stats[row[0]] << [Time.parse(row[1]), row[2].to_f]
-#end
-#
-#data = stats[METRIC[1]].sort_by{|item| item[0]}.select{|item| item[0] >= start}
-#puts data.take(8).inspect
-#puts aggregate_avg(stats[METRIC[1]], start, INTERVAL).take(4).inspect
-#
+  #aggregate_folder(File.join(root, '2014-04-06'))
+  #aggregate_all(root)
 
 end

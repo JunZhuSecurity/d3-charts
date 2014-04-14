@@ -33,17 +33,12 @@ def get_short_os(os)
   end
 end
 
-def get_vms(folder)
-  vms = %w(vms_mappvcv003.csv vms_mappvck003.csv).reduce([]) do |vms, csv|
-    vms.concat CSV.read(File.join(folder, csv), 'r:bom|utf-8')[1..-1]
-  end
-  vms.map do |vm|
-    vm[VM_NAME].upcase!
+def get_vms(date)
+  read_vms("stats/vms/vms_#{date}.csv").each do |vm|
     vm[VM_CPU] = vm[VM_CPU].to_i
-    vm[VM_RAM] = vm[VM_RAM].to_f / 1024
+    vm[VM_RAM] = vm[VM_RAM].to_f
     vm[VM_STORAGE] = vm[VM_STORAGE].to_f
   end
-  vms
 end
 
 def select_env_vms(env, vms)
@@ -159,9 +154,8 @@ def generate_dashboard_json(root)
 
   json = {}
 
-  data = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}
-  data = data.sort.last
-  vms = get_vms(data) # get latest vms
+  last = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}.sort.last
+  vms = get_vms(last)
 
   #oses = vms.map{|vm| vm[VM_OS] || "other"}.group_by{|os| os.downcase}.map{|k,v|[k, v.size]}.sort_by{|item| -item[1]}
   #puts oses.inspect
@@ -184,7 +178,7 @@ def generate_dashboard_json(root)
   groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
-  json[:groups] = groups.take(5).map do |group, gvms|
+  json[:groups] = groups.map do |group, gvms|
 
     env = {}
     ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
@@ -225,5 +219,5 @@ if $0 == __FILE__
   json = generate_dashboard_json(File.join(__dir__, 'data'))
   File.write(File.join(__dir__, 'dashboard.json'), json)
 
-  #require_relative 'release'
+  require_relative 'release'
 end
