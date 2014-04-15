@@ -57,15 +57,17 @@
 
   </div>
 
-  <div class="jumbotron">
-    <div class="container">
-      <div style="text-align: right;margin-top:20px;">Last Update: <span id="Updated"></span></div>
-      <div>Application Groups detected: <span id="AppGroups"></span></div>
-        <div class="checkbox" style="float:right;">
+  <div class="jumbotron" style="padding-bottom:0px;">
+    <div class="container" >
+
+        <div class="checkbox" style="float:right;margin-top:16px;">
             <label><input id="show_all" type="checkbox">Show everything</label>
         </div>
-      <!--<div>Total Number of VMs</h2>-->
-      <!--<h2>Total Number of CPU</h2>-->
+
+        <div id="timeline">
+            <svg width="1024" height="250" ></svg>
+        </div>
+
     </div>
   </div>
 
@@ -74,6 +76,9 @@
           Loading ...
       </div>
   </div>
+
+  <div style="text-align: center; margin-top:20px; color:#999">Application Groups: <span id="AppGroups"></span></div>
+  <div style="text-align: center; margin-bottom:20px; color:#999">Created: <span id="Created"></span></div>
 
   <script src="timeline.js"></script>
   <script src="dashboard.js"></script>

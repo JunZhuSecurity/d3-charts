@@ -220,8 +220,8 @@ def get_stats(file, start)
          line[S_RAM] = line[S_RAM].to_f / (1024 * 1024)   # KiB => GiB
          line[S_DISK_IN] = line[S_DISK_IN].to_f / 1024    # KiBps -> MiB/s
          line[S_DISK_OUT] = line[S_DISK_OUT].to_f / 1024  # KiBPS -> MiB/s
-         line[S_NET_IN] = line[S_NET_IN].to_f / 1024      # KiBPS -> MiB/s
-         line[S_NET_OUT] = line[S_NET_OUT].to_f / 1024
+         line[S_NET_IN] = line[S_NET_IN].to_f / 1024      # KiBPS -> MiB/s    # * 1024 * 8 / (1000 * 1000)   #KiB/s -> #MBit/s
+         line[S_NET_OUT] = line[S_NET_OUT].to_f / 1024    # KiBPS -> MiB/s    # * 1024 * 8 / (1000 * 1000) #KiB/s -> #MBit/s
 
          result << line
        end

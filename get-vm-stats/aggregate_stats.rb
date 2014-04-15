@@ -183,6 +183,14 @@ def aggregate_vms(root)
   end
 end
 
+def get_vms(date)
+  read_vms("stats/vms/vms_#{date}.csv").each do |vm|
+    vm[VM_CPU] = vm[VM_CPU].to_i
+    vm[VM_RAM] = vm[VM_RAM].to_f
+    vm[VM_STORAGE] = vm[VM_STORAGE].to_f
+  end
+end
+
 def read_vms(file)
   return nil unless File.exists?(file)
   File.readlines(file).each.map{|line| line.split(',')}

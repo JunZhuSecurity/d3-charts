@@ -40,6 +40,7 @@ svg {margin: 4px; }
 .line.net.in { stroke: hsla(180, 100%, 45%, 1); }
 .line.net.out { stroke: hsla(270, 100%, 50%, 1); }
 
-
+.line.vm { stroke: hsla(350, 100%, 50%, 0.9); stroke-width: 2px; }
+.line.storage { stroke: hsla(1, 100%, 30%, 0.9); stroke-width: 2px; }
 
 

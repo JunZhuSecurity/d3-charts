@@ -181,7 +181,7 @@ d3.json("appgroups.json", function(error, json) {
         chart.append("path").attr("class", "line disk out").attr("d", wrote_line);
     }
 
-    d3.select('#Updated').text(json.stop);
+    d3.select('#Created').text(json.stop);
     d3.select('#AppGroups').text(json.groups.length);
 
     var time_format = d3.time.format("%Y-%m-%d %H:%M:%S %Z");

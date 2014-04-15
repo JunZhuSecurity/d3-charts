@@ -1,135 +1,47 @@
 d3.json("timeline.json", function(error, json) {
 
-    var percent = d3.format(".1%");
-    var precision = d3.format(".1f");
+    var ONE_DAY = 24 * 60 * 60 * 1000;
+    var margin = {top: 20, right: 20, bottom: 20, left: 30};
 
-    function create_chart(chart) {
-        var margin = {top: 20, right: 20, bottom: 20, left: 30};
-        var width = 760 - margin.left - margin.right;
-
-        // shared X-Axis
-        var scaleX = d3.time.scale.utc()
-            .domain([json.start, json.stop]).range([0, width]);
-
-        var xAxis = d3.svg.axis().scale(scaleX).orient("bottom");
-
-        function get_height(d) {
-            d.height = this.parentNode.parentNode.offsetHeight - 8;
-            d.height /= 1;
-            return d.height;
-        }
-
-        function translate(d) {
-            return "translate(0, " + (d.height - margin.top - margin.bottom) + ")";
-        }
-
-        chart = chart.append('svg:svg')
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", 1).attr("height", get_height)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        chart.append("g")
-            .attr("class", "x axis")
-            .attr("transform", translate)
-            .call(xAxis);
-
-        // attach scaleY
-        json.groups.forEach(function(group){
-            group.cpu.scaleY = d3.scale.linear().domain([0, group.cpu.used]).range([group.height - margin.top - margin.bottom, 0]);
-            group.ram.scaleY = d3.scale.linear().domain([0, group.ram.used]).range([group.height - margin.top - margin.bottom, 50]);
-            group.net.scaleY = d3.scale.linear().domain([0,d3.max([group.net.received, group.net.sent])]).range([group.height - margin.top - margin.bottom, 100]);
-            group.disk.scaleY = d3.scale.linear().domain([0,d3.max([group.disk.read, group.disk.wrote])]).range([group.height - margin.top - margin.bottom, 150]);
-        });
-
-        function yAxisGenerator(selection) {
-            selection.each(function (d){
-                var yAxis = d3.svg.axis().scale(d.cpu.scaleY).orient("left");
-                d3.select(this).call(yAxis)
-            });
-        }
-
-        chart.append("g").attr("class", "y axis").call(yAxisGenerator)
-            .append("text").text("Used #CPU").attr("class", "label")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 16)
-            .style("text-anchor", "end");
-
-        var line = d3.svg.line()
-            .interpolate("basis")
-            .x(function(d, i) {return scaleX(json.start + json.interval * i); });
-
-        function cpu_line(group) {
-            line.y(function(d){return group.cpu.scaleY(d);});
-            return line(group.cpu.data);
-        }
-
-        function ram_line(group) {
-            line.y(function(d){return group.ram.scaleY(d);});
-            return line(group.ram.data);
-        }
-
-        function received_line(group) {
-            line.y(function(d){return group.net.scaleY(d);});
-            return line(group.net.data_received);
-        }
-
-        function sent_line(group) {
-            line.y(function(d){return group.net.scaleY(d);});
-            return line(group.net.data_sent);
-        }
-
-        function read_line(group) {
-            line.y(function(d){return group.disk.scaleY(d);});
-            return line(group.disk.data_read);
-        }
-
-        function wrote_line(group) {
-            line.y(function(d){return group.disk.scaleY(d);});
-            return line(group.disk.data_wrote);
-        }
-
-        // chart.append("path").attr("class", "line net in").attr("d", received_line);
-//        chart.append("path").attr("class", "line net out").attr("d", sent_line);
-//        chart.append("path").attr("class", "line disk in").attr("d", read_line);
-//        chart.append("path").attr("class", "line disk out").attr("d", wrote_line);
-        chart.append("path").attr("class", "line ram").attr("d", ram_line);
-        chart.append("path").attr("class", "line cpu").attr("d", cpu_line);
+    function transform_start_stop(json) {
+        var date_format = d3.time.format("%Y-%m-%d");
+        json.start = +date_format.parse(json.start);
+        json.stop = +date_format.parse(json.stop);
     }
 
+    var chart = d3.select("#timeline svg");
+    transform_start_stop(json);
 
-    var time_format = d3.time.format("%Y-%m-%d %H:%M:%S %Z");
-    json.start = +time_format.parse(json.start);
-    json.stop = +time_format.parse(json.stop);
-    json.interval = json.interval * 1000;
+    var width = chart.property("offsetWidth") - margin.left - margin.right;
+    var height = chart.property("offsetHeight") - margin.top - margin.bottom;
 
-    var groups = d3.select("#Groups").selectAll("div.row").data(json.groups).enter();
+    var scaleX = d3.time.scale.utc().domain([json.start, json.stop]).range([0, width]);
+    chart.append("g").attr("class", "x axis")
+         .attr("transform", "translate(0, " + height + ")")
+         .call(d3.svg.axis().scale(scaleX).orient("bottom"));
 
-    var group = groups.append("div").attr("class", "row").attr("id", function(d){return d.group;});
-    var col1 = group.append("div").attr("class", "col1");
-    col1.append("div").attr("class", "group").text(function(d){return d.group;})
-        .append("div").attr("class", "summary").html(summary);
-    col1.append("div").attr("class", "alias").text(function(d) {return d.alias;});
-    col1.append("div").attr("class", "owner").text(function(d) {return d.owner;});
+    var scale = d3.scale.linear().domain([0, 1]).range([height, 0]);
+    chart.append("g").attr("class", "y axis")
+        .call(d3.svg.axis().scale(scale).orient("left"))
 
-    col1.append("table").attr("class", "kpi-table important highlight").attr("title", "Peak LIVE Usage")
-        .html(cpu_and_ram);
-    col1.append("table").attr("class", "kpi-table important highlight").attr("title", "Peak LIVE Usage")
-        .html(disk_and_net);
+    var line = d3.svg.line().interpolate("linear").tension(0.9)
+        .x(function(d, i) {return scaleX(json.start + ONE_DAY * i); });
 
-    var env_table = col1.append("table").attr("class", "kpi-table env");
-    var env = env_table.selectAll("tr").data(function(d){return d.env;}).enter();
-    env_table.append("tr").html("<td></td><td>#VM</td><td>#CPU</td><td>RAM [GB]</td>");
+    function create_line(data, style) {
+        var domain = d3.extent(data);
+        domain[0] -= (domain[1] - domain[0]) / 2;
+        if (domain[0] < 0) domain[0] = 0;
+        domain[1] += 10;
+        var scaleY = d3.scale.linear().domain(domain).range([height, 0]);
 
-    var env_row = env.append("tr");
-    for (var i = 0; i < 4; i += 1) {
-        env_row.append("td").text(function(d){return d[i];});
+        line.y(function (d) {return scaleY(d);});
+        chart.append("path").attr("class", "line " + style).attr("d", line(data));
     }
 
-    var chart = group.append("div").attr("class", "col2");
-    create_chart(chart);
-
-    d3.select("#Please_Wait").remove();
+    create_line(json.ram_count, "ram");
+    create_line(json.cpu_count, "cpu");
+    create_line(json.vm_count, "vm");
+    create_line(json.storage, "storage");
 
 });
 
