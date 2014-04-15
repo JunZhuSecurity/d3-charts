@@ -17,7 +17,6 @@ FileUtils.cp('get-vm-stats/app_info.rb', target)
 FileUtils.cp('get-vm-stats/get-vm-stats.rb', target)
 
 target = '//dapptov001/s$/apps/d3-charts'
-FileUtils.rm(File.join(target, 'dashboard.json'))
 FileUtils.cp('appgroups.json', target)
 FileUtils.cp('timeline.json', target)
 FileUtils.cp('dashboard.html', target)

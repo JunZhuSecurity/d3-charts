@@ -31,8 +31,8 @@ d3.json("appgroups.json", function(error, json) {
     var precision = d3.format(".1f") ;
     function disk_and_net(group) {
         return '<tr><td></td><td>Disk [MB/s]</td><td>Net [MBit/s]</td></tr>' +
-               '<tr><td>Read</td><td>' + precision(group.disk.read) + '</td><td>' + precision(group.net.received) + '</td></tr>' +
-               '<tr><td>Wrote</td><td>' + precision(group.disk.wrote) + '</td><td>' + precision(group.net.sent) + '</td></tr>';
+               '<tr><td>In</td><td>' + precision(group.disk.read) + '</td><td>' + precision(group.net.received) + '</td></tr>' +
+               '<tr><td>Out</td><td>' + precision(group.disk.wrote) + '</td><td>' + precision(group.net.sent) + '</td></tr>';
     }
 
     function create_chart(chart) {

@@ -13,6 +13,10 @@
   <style>
       .container {width: 1024px;}
       .row {margin-bottom:18px; box-shadow:2px 2px 5px #d0d0d2; background-color: #f5f6f7; border-radius:5px; padding-bottom:5px;}
+
+     .nav>li>a{padding:3px 9px; margin-left:6px;}
+
+
       .col1 {width: 256px; float:left; padding: 0px 15px; }
       .col2 {width: 768px; float:left; padding: 0px 10px; }
 
@@ -37,12 +41,12 @@
 
 </head>
 <body>
-  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container" style="padding-top:10px;">
+  <div class="navbar navbar-inverse navbar-fixed-top" >
+    <div class="container" style="padding: 0;">
       <div class="navbar-header">
-        <a class="navbar-brand" style="padding-top:9px;font-size:20px;color:#ccc;" href="#">AS24 VM KPIs</a>
+        <a class="navbar-brand" style="color:#f0ad4e" href="#">AS24 VM Dashboard</a>
       </div>
-      <div id="SortBy" class="">
+      <div id="SortBy" style="padding-top:13px;">
         <ul class="nav nav-pills">
           <li id="SortByVMCount"><a href="#">VM Count</a></li>
           <li id="SortByCPU" class="active"><a href="#">CPU Count</a></li>
@@ -52,27 +56,20 @@
           <li id="SortByStorage" ><a href="#">Storage</a></li>
         </ul>
       </div>
-
     </div>
-
   </div>
 
-  <div class="jumbotron" style="padding-bottom:0px;">
-    <div class="container" >
-
-        <div class="checkbox" style="float:right;margin-top:16px;">
+  <div style="position:fixed; z-index: 1030; top:51px; height:38px; width:100%; background-color: #bbb;">
+    <div class="container">
+        DEBUG:
+        <div class="checkbox" style="float:right;margin-top:6px;margin-bottom:0px;">
             <label><input id="show_all" type="checkbox">Show everything</label>
         </div>
-
-        <div id="timeline">
-            <svg width="1024" height="250" ></svg>
-        </div>
-
     </div>
   </div>
 
-  <div id="Groups" class="container">
-      <div id="Please_Wait" style="position:relative; margin-left:496px;margin-bottom:30px">
+  <div id="Groups" class="container" style="margin-top:102px;">
+      <div id="Please_Wait" style="text-align: center">
           Loading ...
       </div>
   </div>
@@ -80,7 +77,6 @@
   <div style="text-align: center; margin-top:20px; color:#999">Application Groups: <span id="AppGroups"></span></div>
   <div style="text-align: center; margin-bottom:20px; color:#999">Created: <span id="Created"></span></div>
 
-  <script src="timeline.js"></script>
   <script src="dashboard.js"></script>
   <script src="interaction.js"></script>
 </body>

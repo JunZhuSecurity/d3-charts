@@ -94,6 +94,10 @@ class GroupStats
         end
       end
     end
+
+    # TODO Mbit Umrechnung
+    @stats[S_NET_IN] = @stats[S_NET_IN].map{|v| (v * 1024 * 1024 * 8) / 1000 / 1000 }
+    @stats[S_NET_OUT] = @stats[S_NET_OUT].map{|v| (v * 1024 * 1024 * 8) / 1000 / 1000 }
   end
 
   def cpu
@@ -160,7 +164,7 @@ def generate_dashboard_json(root)
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
   json[:groups] = groups.map do |group, gvms|
-  #json[:groups] = groups.select{|group, gg| group =~ /WEBDE|ELAVM/}.map do |group, gvms|
+  #json[:groups] = groups.select{|group, gg| group =~ /WEBDE|ELAVM|CDNPI|ORASB/}.map do |group, gvms|
   #json[:groups] = groups.drop(120).map do |group, gvms|
 
     env = {}
@@ -181,7 +185,7 @@ def generate_dashboard_json(root)
         owner: owner,
 
         total: gvms.size,
-        storage: gvms.reduce(0){|m, vm| m + vm[VM_STORAGE]}.round(0),
+        storage: gvms.reduce(0){|m, vm| m + vm[VM_USED_STORAGE]}.round(0),
         os: [os, get_short_os(os)],
 
         cpu: stats.cpu,

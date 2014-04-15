@@ -15,7 +15,8 @@ def generate_vm_timeline_json(root)
       vm_removed: days.map{|day| day[VMS_VM_REMOVED].to_i},
       cpu_count: days.map{|day| day[VMS_CPU].to_i},
       ram_count: days.map{|day| day[VMS_RAM].to_i},
-      storage: days.map{|day| day[VMS_STORAGE].to_i},
+      storage: days.map{|day| day[VMS_USED_STORAGE].to_i},
+      storage_provisioned: days.map{|day| day[VMS_PROVISIONED_STORAGE].to_i},
   }
 
   json.to_json

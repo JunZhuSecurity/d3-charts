@@ -29,19 +29,21 @@ METRIC[S_NET_OUT] = 'net.transmitted.average'
 VM_NAME = 0
 VM_CPU = 1
 VM_RAM = 2      #GiB
-VM_STORAGE = 3  #GiB
+VM_USED_STORAGE = 3  #GiB
 VM_HOST = 4
 VM_OS = 5
 VM_OWNER = 6
+VM_PROVISIONED_STORAGE = 7
 
 # VMS History
 VMS_DATE = 0
 VMS_VM = 1
 VMS_CPU = 2
 VMS_RAM = 3
-VMS_STORAGE = 4
+VMS_USED_STORAGE = 4
 VMS_VM_ADDED = 5
 VMS_VM_REMOVED = 6
+VMS_PROVISIONED_STORAGE = 7
 
 # Source Format
 # key1, TimeStamp, value
@@ -157,7 +159,8 @@ def aggregate_vms(root)
       [VM_NAME, VM_OS, VM_OWNER, VM_HOST].each{|c| (vm[c] || '').gsub!(',', ' ')} # escape ','
       vm[VM_NAME].upcase!
       vm[VM_RAM] = '%g' % (vm[VM_RAM].to_f / 1024).round(1)
-      vm[VM_STORAGE] = vm[VM_STORAGE].to_f.round(8)
+      vm[VM_USED_STORAGE] = vm[VM_USED_STORAGE].to_f.round(8)
+      vm[VM_PROVISIONED_STORAGE] = vm[VM_PROVISIONED_STORAGE].to_f.round(8) if vm[VM_PROVISIONED_STORAGE]
     end
     vms = vms.sort_by {|vm| vm[VM_NAME]}
 
@@ -174,7 +177,7 @@ def aggregate_vms(root)
       row[VMS_VM] = vms.size
       row[VMS_CPU] = vms.reduce(0){|result, vm| result + vm[VM_CPU].to_i}
       row[VMS_RAM] = vms.reduce(0){|result, vm| result + vm[VM_RAM].to_f}.ceil
-      row[VMS_STORAGE] = vms.reduce(0){|result, vm| result + vm[VM_STORAGE].to_f}.ceil
+      row[VMS_USED_STORAGE] = vms.reduce(0){|result, vm| result + vm[VM_USED_STORAGE].to_f}.ceil
       row[VMS_VM_ADDED] = (current - last).size
       row[VMS_VM_REMOVED] = (last - current).size
       file.puts(row.join(','))
@@ -187,7 +190,7 @@ def get_vms(date)
   read_vms("stats/vms/vms_#{date}.csv").each do |vm|
     vm[VM_CPU] = vm[VM_CPU].to_i
     vm[VM_RAM] = vm[VM_RAM].to_f
-    vm[VM_STORAGE] = vm[VM_STORAGE].to_f
+    vm[VM_USED_STORAGE] = vm[VM_USED_STORAGE].to_f
   end
 end
 

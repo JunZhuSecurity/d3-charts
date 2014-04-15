@@ -18,7 +18,7 @@ $vm = (get-vm | ? {$_.PowerState -eq "PoweredOn"})
 
 Write-Host "Saving VMs from $vis"
 $vm |
-Select-Object -Property Name,NumCpu,MemoryMB,usedSpaceGB,@{Name="HostName"; Expression={$_.VMHost.Name}},@{Name="OS"; Expression={$_.Guest.OSFullName}},@{Name="Owner"; Expression={$_.CustomFields["Application-Owner"]}} |
+Select-Object -Property Name,NumCpu,MemoryMB,usedSpaceGB,@{Name="HostName"; Expression={$_.VMHost.Name}},@{Name="OS"; Expression={$_.Guest.OSFullName}},@{Name="Owner"; Expression={$_.CustomFields["Application-Owner"]}},ProvisionedSpaceGB |
 export-csv "vms_$vis.csv" -Encoding UTF8 -NoTypeInformation
 
 Write-Host "Get Live VMs"
