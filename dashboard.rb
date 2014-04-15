@@ -33,14 +33,6 @@ def get_short_os(os)
   end
 end
 
-def get_vms(date)
-  read_vms("stats/vms/vms_#{date}.csv").each do |vm|
-    vm[VM_CPU] = vm[VM_CPU].to_i
-    vm[VM_RAM] = vm[VM_RAM].to_f
-    vm[VM_STORAGE] = vm[VM_STORAGE].to_f
-  end
-end
-
 def select_env_vms(env, vms)
   env_pattern = ENVIRONMENTS[env]
   vms.select{|vm| vm[VM_NAME] =~ env_pattern}
@@ -114,7 +106,7 @@ class GroupStats
 
   def used_total(type, total, vm_used, vm_total)
     {
-        used: peak_usage(type).ceil,
+        used: peak_usage(type),
         total: total,
         vm: {
             used:  vm_used.round(1),
@@ -154,32 +146,22 @@ def generate_dashboard_json(root)
 
   json = {}
 
-  last = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}.sort.last
-  vms = get_vms(last)
-
-  #oses = vms.map{|vm| vm[VM_OS] || "other"}.group_by{|os| os.downcase}.map{|k,v|[k, v.size]}.sort_by{|item| -item[1]}
-  #puts oses.inspect
-
   # go back 7 days and round to INTERVAL
-  start = Time.now - (7 * 24 * 60 * 60 + 6 * 60 * 60)
+  start = Time.now - (6 * 24 * 60 * 60 + 6 * 60 * 60)
   start = start - start.to_i % (INTERVAL)
-
-  json[:total] = {
-      count: vms.size,
-      cpu: vms.reduce(0){|count, vm| count + vm[VM_CPU]},
-      ram: vms.reduce(0){|count, vm| count + vm[VM_RAM]}.round(0),
-      storage: vms.reduce(0){|count, vm| count + vm[VM_STORAGE]}.round(0)
-  }
   json[:start] = start
   json[:interval] = INTERVAL
 
   # cluster vms by naming convention
   # a group is detected if there are at least two servers where one is an live server
+  last = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}.sort.last
+  vms = get_vms(last)
   groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
+  #json[:groups] = groups.map do |group, gvms|
   #json[:groups] = groups.select{|group, gg| group =~ /WEBDE|ELAVM/}.map do |group, gvms|
-  json[:groups] = groups.map do |group, gvms|
+  json[:groups] = groups.drop(120).map do |group, gvms|
 
     env = {}
     ENVIRONMENTS.keys.each{|key| env[key] = select_env_vms(key, gvms)}
@@ -218,7 +200,5 @@ end
 
 if $0 == __FILE__
   json = generate_dashboard_json(File.join(__dir__, 'data'))
-  File.write(File.join(__dir__, 'dashboard.json'), json)
-
-  require_relative 'release'
+  File.write(File.join(__dir__, 'appgroups.json'), json)
 end

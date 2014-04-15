@@ -21,8 +21,13 @@ end
 data = File.join(__dir__, 'data')
 puts 'Aggregate Stats'
 aggregate_newest(data)
-puts 'Generate dashboard.json'
+
+puts 'Generate timeline.json'
+json = generate_vm_timeline_json(data)
+File.write(File.join(__dir__, '../apps/d3-charts/timeline.json'), json)
+
+puts 'Generate appgroups.json'
 json = generate_dashboard_json(data)
-File.write(File.join(__dir__, '../apps/d3-charts/dashboard.json'), json)
+File.write(File.join(__dir__, '../apps/d3-charts/appgroups.json'), json)
 
 puts "Done\n"
