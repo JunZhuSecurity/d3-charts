@@ -1,8 +1,12 @@
 d3.json("appgroups.json", function(error, json) {
 
+    var percent = d3.format(".1%");
+    var precision = d3.format(".1f");
+
     function summary(group) {
         return '<div>' + group.total +'<span class="unit"> VMs</span></div>' +
-               '<div>' + group.storage + '<span class="unit"> GBS</span></div>' +
+               '<div title="Storage: ' + precision(group.storage.used/1024)+ 'TB used, ' + precision(group.storage.total/1024) + 'TB provisioned">' +
+               group.storage.used + '<span class="unit"> GBS</span></div>' +
                '<div class="unit" title="' + group.os[0] + '">' + group.os[1] + ' </div>';
     }
 
@@ -16,18 +20,15 @@ d3.json("appgroups.json", function(error, json) {
                 fraction_ceil(group.ram, "RAM") + '</tr>';
     }
 
-    var percent = d3.format(".1%");
-    var precision1 = d3.format(".1f");
     function fraction(r, type) {
         return "<td title='" + percent(r.used / r.total) + " Peak " + type + " Usage'>" +
-            precision1(r.used) + "/" + r.total + "</td>";
+            precision(r.used) + "/" + r.total + "</td>";
     }
     function fraction_ceil(r, type) {
         return "<td title='" + percent(r.used / r.total) + " Peak " + type + " Usage'>" +
             Math.ceil(r.used) + "/" + r.total + "</td>";
     }
 
-    var precision = d3.format(".1f") ;
     function disk_and_net(group) {
         return '<tr><td></td><td>Disk [MB/s]</td><td>Net [MBit/s]</td></tr>' +
                '<tr><td>In</td><td>' + precision(group.disk.read) + '</td><td>' + precision(group.net.received) + '</td></tr>' +
@@ -199,11 +200,15 @@ d3.json("appgroups.json", function(error, json) {
 
     var group = groups.append("div").attr("class", "row").attr("id", function(d){return d.group;});
 
-    group.append("a").attr("name", function(d){return d.group.toLowerCase();});
+    var groupLink = function(d){return d.group.toLowerCase();}
+
+    group.append("a").attr("name", groupLink);
 
     var col1 = group.append("div").attr("class", "col1");
-    col1.append("div").attr("class", "group").text(function(d){return d.group;})
-        .append("div").attr("class", "summary").html(summary);
+    var group_name = col1.append("div").attr("class", "group")
+    group_name.append("a").text(function(d){return d.group;}).attr("href", function(d){return "#" + groupLink(d);});
+    group_name.append("div").attr("class", "summary").html(summary);
+
     col1.append("div").attr("class", "alias").text(function(d) {return d.alias;});
     col1.append("div").attr("class", "owner").text(function(d) {return d.owner;});
 
@@ -235,7 +240,6 @@ d3.json("appgroups.json", function(error, json) {
         d3.select(this.previousSibling).classed("hidden", false);
         return false;
     });
-
 
     var show_all_called = false;
     d3.select("#show_all").on("click", function() {

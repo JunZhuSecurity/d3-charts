@@ -58,9 +58,9 @@ end
 
 class GroupStats
 
-  # Peak should be calculated over the last 14 days
-  # For Visualization, the last 5 or 6 days are sufficient (unless they are scrollable)
-  # if in history machines are created or deleted the timeline data is not correct as it uses only the current machines
+  # total peak
+  # vm peak
+  # timeline
 
   def initialize(folder, vms, start)
     @vm_count = vms.size
@@ -95,7 +95,7 @@ class GroupStats
       end
     end
 
-    # Mbit Umrechnung, because data is stored as MiB/s   (MBit = 1000000 Bits, MiB = 1024*1024 Bytes)
+    # TODO Mbit Umrechnung
     @stats[S_NET_IN] = @stats[S_NET_IN].map{|v| (v * 1024 * 1024 * 8) / 1000 / 1000 }
     @stats[S_NET_OUT] = @stats[S_NET_OUT].map{|v| (v * 1024 * 1024 * 8) / 1000 / 1000 }
   end
@@ -158,13 +158,13 @@ def generate_dashboard_json(root)
 
   # cluster vms by naming convention
   # a group is detected if there are at least two servers where one is an live server
-  last = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}.sort.last
-  vms = get_vms(last)
+  newest = Dir.glob('stats/vms/vms_*.csv').select{|e| e =~ /\d{4}-\d{2}-\d{2}.csv$/}.sort.last
+  vms = get_vms(newest)
   groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
-  json[:groups] = groups.map do |group, gvms|
-  #json[:groups] = groups.select{|group, gg| group =~ /WEBDE|ELAVM|CDNPI|ORASB/}.map do |group, gvms|
+  #json[:groups] = groups.map do |group, gvms|
+  json[:groups] = groups.select{|group, gg| group =~ /WEBDE|WEBAB|ELAVM|CDNPI|ORASB/}.map do |group, gvms| # ELAVM|CDNPI|ORASB
   #json[:groups] = groups.drop(120).map do |group, gvms|
 
     env = {}

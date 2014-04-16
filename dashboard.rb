@@ -185,7 +185,11 @@ def generate_dashboard_json(root)
         owner: owner,
 
         total: gvms.size,
-        storage: gvms.reduce(0){|m, vm| m + vm[VM_USED_STORAGE]}.round(0),
+        storage: {
+            used: gvms.reduce(0){|m, vm| m + vm[VM_USED_STORAGE]}.round(0),
+            total: gvms.reduce(0){|m, vm| m + vm[VM_PROVISIONED_STORAGE]}.round(0)
+        },
+
         os: [os, get_short_os(os)],
 
         cpu: stats.cpu,
