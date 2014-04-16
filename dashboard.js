@@ -14,7 +14,6 @@ d3.json("appgroups.json", function(error, json) {
                 '<tr><td>Total</td>' +
                 fraction_ceil(group.cpu, "CPU") +
                 fraction_ceil(group.ram, "RAM") + '</tr>';
-
     }
 
     var percent = d3.format(".1%");
@@ -33,6 +32,14 @@ d3.json("appgroups.json", function(error, json) {
         return '<tr><td></td><td>Disk [MB/s]</td><td>Net [MBit/s]</td></tr>' +
                '<tr><td>In</td><td>' + precision(group.disk.read) + '</td><td>' + precision(group.net.received) + '</td></tr>' +
                '<tr><td>Out</td><td>' + precision(group.disk.wrote) + '</td><td>' + precision(group.net.sent) + '</td></tr>';
+    }
+
+    function create_legend() {
+        return '<div class="legend">' +
+               '<i class="cpu"></i>CPU' +
+               '<span class="hidden"><i class="ram"></i>RAM<i class="disk in"></i>Read<i class="disk out"></i>Write<i class="net in"></i>Receive<i class="net out"></i>Transmit</span>' +
+               '<a class="more" onclick="return false;" href="#">...</a>' +
+               '</div>';
     }
 
     function create_chart(chart) {
@@ -69,9 +76,9 @@ d3.json("appgroups.json", function(error, json) {
         // attach scaleY
         json.groups.forEach(function(group){
             group.cpu.scaleY = d3.scale.linear().domain([0, group.cpu.used]).range([group.height - margin.top - margin.bottom, 0]);
-            group.ram.scaleY = d3.scale.linear().domain([0, group.ram.used]).range([group.height - margin.top - margin.bottom, 50]);
-            group.net.scaleY = d3.scale.linear().domain([0,d3.max([group.net.received, group.net.sent])]).range([group.height - margin.top - margin.bottom, 100]);
-            group.disk.scaleY = d3.scale.linear().domain([0,d3.max([group.disk.read, group.disk.wrote])]).range([group.height - margin.top - margin.bottom, 150]);
+            group.ram.scaleY = d3.scale.linear().domain([0, group.ram.used]).range([group.height - margin.top - margin.bottom, 40]);
+            group.net.scaleY = d3.scale.linear().domain([0,d3.max([group.net.received, group.net.sent])]).range([group.height - margin.top - margin.bottom, 80]);
+            group.disk.scaleY = d3.scale.linear().domain([0,d3.max([group.disk.read, group.disk.wrote])]).range([group.height - margin.top - margin.bottom, 120]);
         });
 
         function yAxisGenerator(selection) {
@@ -216,13 +223,20 @@ d3.json("appgroups.json", function(error, json) {
     }
 
     var chart = group.append("div").attr("class", "col2");
+    chart.html(create_legend());
     create_chart(chart);
-
-
 
     d3.select("#Please_Wait").remove();
 
     // Hack for showing everything
+
+    d3.selectAll("a.more").on("click", function()
+    {
+        d3.select(this).classed("hidden", true);
+        d3.select(this.previousSibling).classed("hidden", false);
+    });
+
+
     var show_all_called = false;
     d3.select("#show_all").on("click", function() {
         if (!show_all_called) {
