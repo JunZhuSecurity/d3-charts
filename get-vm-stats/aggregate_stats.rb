@@ -191,6 +191,7 @@ def get_vms(file)
     vm[VM_CPU] = vm[VM_CPU].to_i
     vm[VM_RAM] = vm[VM_RAM].to_f
     vm[VM_USED_STORAGE] = vm[VM_USED_STORAGE].to_f
+    vm[VM_PROVISIONED_STORAGE] = vm[VM_PROVISIONED_STORAGE].to_f
   end
 end
 

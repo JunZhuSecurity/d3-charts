@@ -38,7 +38,7 @@ d3.json("appgroups.json", function(error, json) {
     function legend() {
         return '<div class="legend">' +
                '<i class="cpu"></i>CPU<i class="ram"></i>RAM<span class="hidden"><i class="disk in"></i>Read<i class="disk out"></i>Write<i class="net in"></i>Receive<i class="net out"></i>Transmit</span>' +
-               '<a class="more" onclick="return false" href="#">...</a>' +
+              // '<a class="more" onclick="return false" href="#">...</a>' +
                '</div>';
     }
 

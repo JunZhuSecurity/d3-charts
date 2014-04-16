@@ -6,8 +6,6 @@ svg {margin: 4px; }
   fill: #444;
 }
 
-.axis .label {fill: hsl(140, 100%, 41%)}
-
 .axis path,
 .axis line {
   fill: none;
