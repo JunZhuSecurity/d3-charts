@@ -34,11 +34,10 @@ d3.json("appgroups.json", function(error, json) {
                '<tr><td>Out</td><td>' + precision(group.disk.wrote) + '</td><td>' + precision(group.net.sent) + '</td></tr>';
     }
 
-    function create_legend() {
+    function legend() {
         return '<div class="legend">' +
-               '<i class="cpu"></i>CPU' +
-               '<span class="hidden"><i class="ram"></i>RAM<i class="disk in"></i>Read<i class="disk out"></i>Write<i class="net in"></i>Receive<i class="net out"></i>Transmit</span>' +
-               '<a class="more" onclick="return false;" href="#">...</a>' +
+               '<i class="cpu"></i>CPU<i class="ram"></i>RAM<span class="hidden"><i class="disk in"></i>Read<i class="disk out"></i>Write<i class="net in"></i>Receive<i class="net out"></i>Transmit</span>' +
+               '<a class="more" onclick="return false" href="#">...</a>' +
                '</div>';
     }
 
@@ -223,7 +222,7 @@ d3.json("appgroups.json", function(error, json) {
     }
 
     var chart = group.append("div").attr("class", "col2");
-    chart.html(create_legend());
+    chart.html(legend());
     create_chart(chart);
 
     d3.select("#Please_Wait").remove();
@@ -234,6 +233,7 @@ d3.json("appgroups.json", function(error, json) {
     {
         d3.select(this).classed("hidden", true);
         d3.select(this.previousSibling).classed("hidden", false);
+        return false;
     });
 
 
@@ -241,6 +241,8 @@ d3.json("appgroups.json", function(error, json) {
     d3.select("#show_all").on("click", function() {
         if (!show_all_called) {
             create_show_all(chart);
+            d3.selectAll(".legend span.hidden").classed("hidden", false);
+            d3.selectAll(".legend .more").classed("hidden", true);
             show_all_called = true;
         }
     });

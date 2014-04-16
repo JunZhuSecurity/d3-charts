@@ -25,7 +25,7 @@ svg {margin: 4px; }
 .line {
     fill: none;
     stroke: black;
-    stroke-width: 0.8px;
+    stroke-width: 1px;
 }
 
 /* Color Palette */
