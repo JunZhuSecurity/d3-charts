@@ -158,13 +158,13 @@ def generate_dashboard_json(root)
 
   # cluster vms by naming convention
   # a group is detected if there are at least two servers where one is an live server
-  last = Dir.glob('*').select{|e|File.directory?(e) && e =~ /^\d{4}-\d{2}-\d{2}$/}.sort.last
-  vms = get_vms(last)
+  newest = Dir.glob('stats/vms/vms_*.csv').select{|e| e =~ /\d{4}-\d{2}-\d{2}.csv$/}.sort.last
+  vms = get_vms(newest)
   groups = vms.group_by{|vm| (vm[VM_NAME][/\w(\w*)\w\d\d\d$/, 1] || 'other').upcase}.to_a  # [key, [vm1, vm2, ...]]
               .select{|group| group[0] != 'OTHER' && group[1].any?{|vm| vm[VM_NAME] =~ ENVIRONMENTS[:live] } && group[1].size > 2}
 
-  json[:groups] = groups.map do |group, gvms|
-  #json[:groups] = groups.select{|group, gg| group =~ /WEBDE|ELAVM|CDNPI|ORASB/}.map do |group, gvms|
+  #json[:groups] = groups.map do |group, gvms|
+  json[:groups] = groups.select{|group, gg| group =~ /WEBDE|WEBAB|ELAVM|CDNPI|ORASB/}.map do |group, gvms| # ELAVM|CDNPI|ORASB
   #json[:groups] = groups.drop(120).map do |group, gvms|
 
     env = {}

@@ -13,12 +13,11 @@
   <style>
       .container {width: 1024px;}
       .row {margin-bottom:18px; box-shadow:2px 2px 5px #d0d0d2; background-color: #f5f6f7; border-radius:5px; padding-bottom:5px;}
-
-     .nav>li>a{padding:3px 9px; margin-left:6px;}
-
-
+      .nav>li>a{padding:3px 9px; margin-left:6px;}
       .col1 {width: 256px; float:left; padding: 0px 15px; }
       .col2 {width: 768px; float:left; padding: 0px 10px; }
+
+      a[name] {padding-top:140px; margin-top:-140px; display: inline-block;}
 
       .group {font-size:36px; font-weight: bold; }
       .group .summary {float:right; font-size:14px; margin-top:9px; margin-bottom:0px; line-height: 14px; text-align:right;}
@@ -36,6 +35,18 @@
       .kpi-table tr:nth-child(1n + 2) td:nth-child(1n +2) {font-weight: bold; }
       .kpi-table.important tr:nth-child(1n + 2) td:nth-child(1n +2) {font-size: 16px; width:84px; padding-top:1px;}
       .kpi-table.env td:nth-child(1n) {width:56px;}
+
+      .legend {position:absolute; right:16px; top:9px; font-size:11px; color: #444;}
+      .legend .more {margin-left:6px; font-weight: bold; font-size:12px;}
+      .legend i {display:inline-block; width:10px; height:5px; margin-bottom:1px; margin-left:5px; margin-right:4px;}
+      .legend a {color: #444}
+      .legend .cpu {background: hsla(140, 100%, 41%, 0.8); }
+      .legend .ram {background: hsla(220, 100%, 48%, 0.8); }
+      .legend .disk.in {background:  hsla(40, 100%, 45%, 0.9); }
+      .legend .disk.out {background: hsla(10, 100%, 50%, 0.9); }
+      .legend .net.in {background: hsla(180, 100%, 45%, 1); }
+      .legend .net.out {background: hsla(290, 100%, 45%, 1); }
+
 
   </style>
 

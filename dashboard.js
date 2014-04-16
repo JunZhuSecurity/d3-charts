@@ -192,6 +192,9 @@ d3.json("appgroups.json", function(error, json) {
     var groups = d3.select("#Groups").selectAll("div.row").data(json.groups).enter();
 
     var group = groups.append("div").attr("class", "row").attr("id", function(d){return d.group;});
+
+    group.append("a").attr("name", function(d){return d.group.toLowerCase();});
+
     var col1 = group.append("div").attr("class", "col1");
     col1.append("div").attr("class", "group").text(function(d){return d.group;})
         .append("div").attr("class", "summary").html(summary);
@@ -214,6 +217,8 @@ d3.json("appgroups.json", function(error, json) {
 
     var chart = group.append("div").attr("class", "col2");
     create_chart(chart);
+
+
 
     d3.select("#Please_Wait").remove();
 

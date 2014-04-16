@@ -58,9 +58,9 @@ end
 
 class GroupStats
 
-  # total peak
-  # vm peak
-  # timeline
+  # Peak should be calculated over the last 14 days
+  # For Visualization, the last 5 or 6 days are sufficient (unless they are scrollable)
+  # if in history machines are created or deleted the timeline data is not correct as it uses only the current machines
 
   def initialize(folder, vms, start)
     @vm_count = vms.size
@@ -95,7 +95,7 @@ class GroupStats
       end
     end
 
-    # TODO Mbit Umrechnung
+    # Mbit Umrechnung, because data is stored as MiB/s   (MBit = 1000000 Bits, MiB = 1024*1024 Bytes)
     @stats[S_NET_IN] = @stats[S_NET_IN].map{|v| (v * 1024 * 1024 * 8) / 1000 / 1000 }
     @stats[S_NET_OUT] = @stats[S_NET_OUT].map{|v| (v * 1024 * 1024 * 8) / 1000 / 1000 }
   end

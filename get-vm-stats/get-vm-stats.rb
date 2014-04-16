@@ -4,6 +4,7 @@ require 'as24_build_tools'
 
 require_relative 'aggregate_stats'
 require_relative 'dashboard'
+require_relative 'timeline'
 
 puts "\nGet-VM-Stats #{Time.now}"
 
