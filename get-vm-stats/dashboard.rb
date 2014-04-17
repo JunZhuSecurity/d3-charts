@@ -200,7 +200,7 @@ def generate_dashboard_json(root)
     }
   end
 
-  json[:groups].sort_by!{|group| -group[:cpu][:total]}
+  json[:groups].sort_by!{|group| -group[:storage][:used]}
   json[:stop] = start + json[:groups].first[:cpu][:data].size * INTERVAL
 
   json.to_json
