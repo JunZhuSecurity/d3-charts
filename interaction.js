@@ -28,8 +28,12 @@
         return b.total - a.total;
     });
 
-    sortBy('#SortByStorage', function (a, b) {
-        return b.storage - a.storage;
+    sortBy('#SortByUsedStorage', function (a, b) {
+        return b.storage.used - a.storage.used;
+    });
+
+    sortBy('#SortByProvisionedStorage', function (a, b) {
+        return b.storage.used - a.storage.used;
     });
 
 
