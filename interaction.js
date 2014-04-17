@@ -36,5 +36,9 @@
         return b.storage.used - a.storage.used;
     });
 
+    sortBy('#SortByGroup', function (a, b) {
+        return a.group.localeCompare(b.group);
+    });
+
 
 })();

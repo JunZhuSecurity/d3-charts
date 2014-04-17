@@ -75,7 +75,7 @@ d3.json("appgroups.json", function(error, json) {
 
         // attach scaleY
         json.groups.forEach(function(group){
-            group.cpu.scaleY = d3.scale.linear().domain([0, group.cpu.used]).range([group.height - margin.top - margin.bottom, 0]);
+            group.cpu.scaleY = d3.scale.linear().domain([0, Math.max(group.cpu.used, 0.5)]).range([group.height - margin.top - margin.bottom, 0]);
             group.ram.scaleY = d3.scale.linear().domain([0, group.ram.used]).range([group.height - margin.top - margin.bottom, 40]);
             group.net.scaleY = d3.scale.linear().domain([0,d3.max([group.net.received, group.net.sent])]).range([group.height - margin.top - margin.bottom, 80]);
             group.disk.scaleY = d3.scale.linear().domain([0,d3.max([group.disk.read, group.disk.wrote])]).range([group.height - margin.top - margin.bottom, 120]);
