@@ -41,17 +41,10 @@ VMS_VM = 1
 VMS_CPU = 2
 VMS_RAM = 3
 VMS_USED_STORAGE = 4
-VMS_VM_ADDED = 5
-VMS_VM_REMOVED = 6
-VMS_PROVISIONED_STORAGE = 7
+VMS_PROVISIONED_STORAGE = 5
+VMS_VM_ADDED = 6
+VMS_VM_REMOVED = 7
 
-# Source Format
-# key1, TimeStamp, value
-# key2, Timestamp, value
-# key1, Timestamp, value
-
-# Target Format
-# Timestamp,value1,value2,value3
 
 def aggregate(data, start, interval, agg)
   data = data.select{|item| item[0] >= start}.sort_by{|item| item[0]} # seek and sort
@@ -178,8 +171,9 @@ def aggregate_vms(root)
       row[VMS_CPU] = vms.reduce(0){|result, vm| result + vm[VM_CPU].to_i}
       row[VMS_RAM] = vms.reduce(0){|result, vm| result + vm[VM_RAM].to_f}.ceil
       row[VMS_USED_STORAGE] = vms.reduce(0){|result, vm| result + vm[VM_USED_STORAGE].to_f}.ceil
-      row[VMS_VM_ADDED] = (current - last).size
-      row[VMS_VM_REMOVED] = (last - current).size
+      row[VMS_PROVISIONED_STORAGE] = vms.reduce(0){|result, vm| result + vm[VM_PROVISIONED_STORAGE].to_f}.ceil
+      row[VMS_VM_ADDED] = (current - last).to_a.join('|')
+      row[VMS_VM_REMOVED] = (last - current).to_a.join('|')
       file.puts(row.join(','))
     end
     last_folder = folder
@@ -237,7 +231,7 @@ end
 if $0 == __FILE__
   root = File.join(__dir__, 'data')
 
-  aggregate_newest(root)
+  aggregate_vms(root)
 
   #aggregate_vms(File.join(root, '2014-04-07'))
 
