@@ -1,4 +1,6 @@
-d3.json("appgroups.json", function(error, json) {
+d3.json("dashboard.json", function(error, json) {
+
+    var ONE_DAY = 24 * 60 * 60 * 1000;
 
     var percent = d3.format(".1%");
     var precision = d3.format(".1f");
@@ -48,7 +50,7 @@ d3.json("appgroups.json", function(error, json) {
 
         // shared X-Axis
         var scaleX = d3.time.scale.utc()
-            .domain([json.start, json.stop]).range([0, width]);
+            .domain([json.start + json.chart_start, json.stop]).range([0, width]);
 
         var xAxis = d3.svg.axis().scale(scaleX).orient("bottom");
 
@@ -75,7 +77,7 @@ d3.json("appgroups.json", function(error, json) {
 
         // attach scaleY
         json.groups.forEach(function(group){
-            group.cpu.scaleY = d3.scale.linear().domain([0, Math.max(group.cpu.used, 0.5)]).range([group.height - margin.top - margin.bottom, 0]);
+            group.cpu.scaleY = d3.scale.linear().domain([0, Math.max(group.cpu.used, 0.5)]).range([group.height - margin.top - margin.bottom, 0]).nice();
             group.ram.scaleY = d3.scale.linear().domain([0, group.ram.used]).range([group.height - margin.top - margin.bottom, 40]);
             group.net.scaleY = d3.scale.linear().domain([0,d3.max([group.net.received, group.net.sent])]).range([group.height - margin.top - margin.bottom, 80]);
             group.disk.scaleY = d3.scale.linear().domain([0,d3.max([group.disk.read, group.disk.wrote])]).range([group.height - margin.top - margin.bottom, 120]);
@@ -94,38 +96,39 @@ d3.json("appgroups.json", function(error, json) {
             .attr("y", 16)
             .style("text-anchor", "end");
 
+        var start = json.start + json.chart_start;
         var line = d3.svg.line()
             .interpolate("basis")
-            .x(function(d, i) {return scaleX(json.start + json.interval * i); });
+            .x(function(d, i) {return scaleX(start + json.interval * i); });
 
         function cpu_line(group) {
             line.y(function(d){return group.cpu.scaleY(d);});
-            return line(group.cpu.data);
+            return line(group.cpu.data.slice(json.chart_offset));
         }
 
         function ram_line(group) {
             line.y(function(d){return group.ram.scaleY(d);});
-            return line(group.ram.data);
+            return line(group.ram.data.slice(json.chart_offset));
         }
 
         function received_line(group) {
             line.y(function(d){return group.net.scaleY(d);});
-            return line(group.net.data_received);
+            return line(group.net.data_received.slice(json.chart_offset));
         }
 
         function sent_line(group) {
             line.y(function(d){return group.net.scaleY(d);});
-            return line(group.net.data_sent);
+            return line(group.net.data_sent.slice(json.chart_offset));
         }
 
         function read_line(group) {
             line.y(function(d){return group.disk.scaleY(d);});
-            return line(group.disk.data_read);
+            return line(group.disk.data_read.slice(json.chart_offset));
         }
 
         function wrote_line(group) {
             line.y(function(d){return group.disk.scaleY(d);});
-            return line(group.disk.data_wrote);
+            return line(group.disk.data_wrote.slice(json.chart_offset));
         }
 
         // chart.append("path").attr("class", "line net in").attr("d", received_line);
@@ -142,7 +145,7 @@ d3.json("appgroups.json", function(error, json) {
 
         // shared X-Axis
         var scaleX = d3.time.scale.utc()
-            .domain([json.start, json.stop]).range([0, width]);
+            .domain([json.start + json.chart_start, json.stop]).range([0, width]);
 
         var xAxis = d3.svg.axis().scale(scaleX).orient("bottom");
 
@@ -158,34 +161,42 @@ d3.json("appgroups.json", function(error, json) {
 
         chart = chart.select("svg g");
 
+        var start = json.start + json.chart_start;
         var line = d3.svg.line()
             .interpolate("basis")
-            .x(function(d, i) {return scaleX(json.start + json.interval * i); });
+            .x(function(d, i) {return scaleX(start + json.interval * i); });
+
+        function ram_line(group) {
+            line.y(function(d){return group.ram.scaleY(d);});
+            return line(group.ram.data.slice(json.chart_offset));
+        }
 
         function received_line(group) {
             line.y(function(d){return group.net.scaleY(d);});
-            return line(group.net.data_received);
+            return line(group.net.data_received.slice(json.chart_offset));
         }
 
         function sent_line(group) {
             line.y(function(d){return group.net.scaleY(d);});
-            return line(group.net.data_sent);
+            return line(group.net.data_sent.slice(json.chart_offset));
         }
 
         function read_line(group) {
             line.y(function(d){return group.disk.scaleY(d);});
-            return line(group.disk.data_read);
+            return line(group.disk.data_read.slice(json.chart_offset));
         }
 
         function wrote_line(group) {
             line.y(function(d){return group.disk.scaleY(d);});
-            return line(group.disk.data_wrote);
+            return line(group.disk.data_wrote.slice(json.chart_offset));
         }
 
         chart.append("path").attr("class", "line net in").attr("d", received_line);
         chart.append("path").attr("class", "line net out").attr("d", sent_line);
         chart.append("path").attr("class", "line disk in").attr("d", read_line);
         chart.append("path").attr("class", "line disk out").attr("d", wrote_line);
+        //chart.append("path").attr("class", "line ram").attr("d", ram_line);
+
     }
 
     d3.select('#Created').text(json.stop);
@@ -195,6 +206,8 @@ d3.json("appgroups.json", function(error, json) {
     json.start = +time_format.parse(json.start);
     json.stop = +time_format.parse(json.stop);
     json.interval = json.interval * 1000;
+    json.chart_start = 9 * ONE_DAY;
+    json.chart_offset = json.chart_start / json.interval;
 
     var groups = d3.select("#Groups").selectAll("div.row").data(json.groups).enter();
 

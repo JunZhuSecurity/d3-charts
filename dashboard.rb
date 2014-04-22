@@ -151,7 +151,7 @@ def generate_dashboard_json(root)
   json = {}
 
   # go back 7 days and round to INTERVAL
-  start = Time.now - (6 * 24 * 60 * 60 + 6 * 60 * 60)
+  start = Time.now - (14 * 24 * 60 * 60 + 6 * 60 * 60)
   start = start - start.to_i % (INTERVAL)
   json[:start] = start
   json[:interval] = INTERVAL
@@ -208,5 +208,5 @@ end
 
 if $0 == __FILE__
   json = generate_dashboard_json(File.join(__dir__, 'data'))
-  File.write(File.join(__dir__, 'appgroups.json'), json)
+  File.write(File.join(__dir__, 'dashboard.json'), json)
 end
