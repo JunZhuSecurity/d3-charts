@@ -19,9 +19,11 @@ FileUtils.cp('get-vm-stats/get-vm-stats.rb', target)
 target = '//dapptov001/s$/apps/d3-charts'
 #FileUtils.cp('dashboard.json', target)
 # FileUtils.cp('timeline.json', target)
+#FileUtils.cp('AppOwner.csv', target)
+FileUtils.cp('chart.css', target)
 FileUtils.cp('dashboard.html', target)
 FileUtils.cp('dashboard.js', target)
-FileUtils.cp('timeline.js', target)
 FileUtils.cp('interaction.js', target)
-FileUtils.cp('chart.css', target)
+FileUtils.cp('timeline.html', target)
+FileUtils.cp('timeline.js', target)
 

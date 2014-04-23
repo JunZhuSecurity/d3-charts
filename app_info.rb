@@ -111,7 +111,7 @@ APP_INFO = {
     rpccm: {owner: '', alias: ''},
     rpcgc: {owner: '', alias: ''},
     rpcla: {owner: '', alias: ''},
-    sqlbi: {owner: '', alias: ''},
+    sqlbi: {owner: 'Andreas Schmiedel', alias: 'BI Data Warehouse'},
     sqldy: {owner: '', alias: ''},
     sqltr: {owner: '', alias: ''},
     sshfp: {owner: '', alias: ''},
@@ -137,11 +137,11 @@ APP_INFO = {
     weber: {owner: 'WebOps', alias: 'Error Server'},
     webes: {owner: 'PrivateBuyer', alias: 'www.autoscout24.es'},
     webew: {owner: '', alias: ''},
-    webfa: {owner: '', alias: ''},
+    webfa: {owner: 'PrivateBuyer', alias: 'CitySearch, Search'},
     webfb: {owner: '', alias: ''},
     webfr: {owner: 'PrivateBuyer', alias: 'www.autoscout24.fr'},
     webic: {owner: '', alias: ''},
-    webid: {owner: 'CLM', alias: 'accounts.autoscout24.com'},
+    webid: {owner: 'CLM Team', alias: 'accounts.autoscout24.com', artifacts: '//dappbsv002/transfer/build_results/Identity'},
     webit: {owner: 'PrivateBuyer', alias: 'www.autoscout24.it'},
     webld: {owner: '', alias: ''},
     weblu: {owner: 'PrivateBuyer', alias: 'www.autoscout24.lu'},
@@ -151,11 +151,11 @@ APP_INFO = {
     webpl: {owner: 'PrivateBuyer', alias: 'www.autoscout24.pl'},
     webps: {owner: '', alias: ''},
     webro: {owner: 'PrivateBuyer', alias: 'www.autoscout24.ro'},
-    webrp: {owner: '', alias: ''},
+    webrp: {owner: 'CLM Team', alias: 'Identity Relying Party', artifacts: '//dappbsv002/transfer/build_results/Identity'},
     webrw: {owner: '', alias: ''},
     webse: {owner: '', alias: ''},
     websf: {owner: '', alias: ''},
-    websm: {owner: '', alias: ''},
+    websm: {owner: 'ASM Teams', alias: 'Werkstattportal'},
     websw: {owner: '', alias: ''},
     webtp: {owner: '', alias: ''},
     webts: {owner: '', alias: ''},
@@ -164,17 +164,22 @@ APP_INFO = {
     webws: {owner: 'VM', alias: 'WCF Web Services'},
 }
 
+require 'CSV'
+
 def get_app_info(app)
   info = APP_INFO[app.to_s.downcase.to_sym]
   info || {owner: '', alias: ''}
 end
 
-if $0 == __FILE__
-  require 'CSV'
-  CSV.open('app_info.csv', 'wb') do |csv|
+def export_app_info(csv)
+  CSV.open(csv, 'wb') do |csv|
     csv << %w(group owner alias artifacts)
     APP_INFO.each do |group, data|
       csv << [group, data[:owner], data[:alias], data[:artifacts]]
     end
   end
+end
+
+if $0 == __FILE__
+  export_app_info(File.join(__dir__, 'AppOwner.csv'))
 end

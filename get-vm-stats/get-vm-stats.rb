@@ -20,16 +20,20 @@ threads.each do |thread|
 end
 
 data = File.join(__dir__, 'data')
+kpi = File.join(__dir__, '../apps/d3-charts')
 
 puts 'Aggregate Stats'
 aggregate_newest(data)
 
 puts 'Generate timeline.json'
 json = generate_timeline_json(data)
-File.write(File.join(__dir__, '../apps/d3-charts/timeline.json'), json)
+File.write(File.join(kpi, 'timeline.json'), json)
 
 puts 'Generate appgroups.json'
 json = generate_dashboard_json(data)
-File.write(File.join(__dir__, '../apps/d3-charts/dashboard.json'), json)
+File.write(File.join(kpi, 'dashboard.json'), json)
+
+puts 'Export AppOwner.csv'
+export_app_info(File.join(kpi, 'AppOwner.csv'))
 
 puts "Done\n"

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>AS24 VM Timeline</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="chart.css">
+
+  <script src="js/vendor/d3.min.js"></script>
+  <style>
+      .container {width: 1024px;}
+      .row {margin-bottom:18px; box-shadow:2px 2px 5px #d0d0d2; background-color: #f5f6f7; border-radius:5px; padding-bottom:5px;}
+      .nav>li>a{padding:3px 9px; margin-left:6px;}
+
+      .table {font-size:13px; color:#222;}
+      .table td:nth-child(1) {border-right: 1px solid #ddd; white-space: nowrap; word-break: keep-all; color:#777;}
+      .table td:nth-child(2) {border-right: 1px solid #ddd;}
+      .table th:nth-child(1) {border-right: 1px solid #ddd; color:#777;}
+      .table th:nth-child(2) {border-right: 1px solid #ddd;}
+
+
+
+
+  </style>
+
+</head>
+<body>
+  <div class="navbar navbar-inverse navbar-fixed-top" >
+    <div class="container" style="padding: 0;">
+      <div class="navbar-header">
+        <a class="navbar-brand" style="color:#f0ad4e" href="#">AS24 VM Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="margin-top:80px;">
+    <div class="row">
+        Test
+    </div>
+
+      <div class="row">
+          <table class="table table-condensed">
+              <thead>
+                <tr><th>Date</th><th style="width:50%">Added</th><th style="width:50%">Removed</th></tr>
+              </thead>
+              <tbody id="vm_delta_table"></tbody>
+          </table>
+      </div>
+  </div>
+
+  <div style="text-align: center; margin-top:20px; margin-bottom:20px; color:#999">
+      <div>Contact: <a href="mailto:crodemeyer@autoscout24.de">crodemeyer@autoscout24.de</a> </div>
+      <div>Created: <span id="Created"></span></div>
+  </div>
+
+  <script src="timeline.js"></script>
+</body>
+</html>
