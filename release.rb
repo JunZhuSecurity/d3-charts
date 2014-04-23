@@ -1,5 +1,6 @@
 
 require 'fileutils'
+require 'kramdown'
 
 FileUtils.chdir(__dir__)
 FileUtils.cp('aggregate_stats.rb', 'get-vm-stats')
@@ -26,4 +27,8 @@ FileUtils.cp('dashboard.js', target)
 FileUtils.cp('interaction.js', target)
 FileUtils.cp('timeline.html', target)
 FileUtils.cp('timeline.js', target)
+
+fragment = Kramdown::Document.new(File.read('readme.md')).to_html
+File.write('readme.html', "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Readme</title><style>body {font-family:Helvetica,Arial;font-size:14px;color:#333;text-align:justify;width:790px;margin-left:36px;}</style></head><body>#{fragment}</body></html>")
+FileUtils.cp('readme.html', target)
 

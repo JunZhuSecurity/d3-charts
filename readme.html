@@ -1,0 +1,31 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>Readme</title><style>body {font-family:Helvetica,Arial;font-size:14px;color:#333;text-align:justify;width:790px;margin-left:36px;}</style></head><body>
+<h1 id="as24-application-resource-usage-monitor">AS24 Application Resource Usage Monitor</h1>
+
+<h2 id="motivation">Motivation</h2>
+<p>Alle AS24 Applikationen laufen in einer komplett virtualisierten Umgebung (aka AS24 Cloud) und teilen sich die
+verfügbaren Resource, wie CPU, RAM, Network und Disk IO. Lokale Festplatten sind eine Illusion, alle Festplatten sind
+virtuell und liegen auf einem zentralen (ausfallsicheren?, hochverfügbaren?) Storage.</p>
+
+<ol>
+  <li>
+    <p>Die Entwickler Teams haben keine Transparenz über die Anzahl und Konfiguration (CPU, RAM, DISK) der Server auf denen
+ihre (Legacy) Applikationen laufen.
+(Grund: In der Vergangenheit hat der Betrieb Server nach eigenem Ermessen provisioniert und betankt)</p>
+  </li>
+  <li>
+    <p>Das Cloud Team sieht eine flache Liste von über 2000 VMs und tut sich schwer eine VM Applikationen und Teams
+zuzuordnen. Das Finden und Löschen von alten, nicht mehr benutzten Servern ist schwierig.</p>
+  </li>
+  <li>
+    <p>VMWare Tools wie VCOps liefern falsche Signale über die Auslastung von Resourcen da sie unsere Systemarchitektur
+(Brandabschnitte, WebServer, JobServer, Testumgebungen) nicht kennen und berücksichtigen.
+Z.B. sind unsere Testsystem grundsätzlich nie ausgelastet, da sie nur im Testfall aktiv werden. Trotzdem müssen sie
+in einer produktions-nahen Konfiguration existieren (2 VMs mit je 2 CPUs) um produktions nah testen zu können.</p>
+  </li>
+</ol>
+
+<h2 id="as24-vm-dashboard">AS24 VM Dashboard</h2>
+
+<p><img src="http://s.autoscout24.net/favicon.png" alt="" /></p>
+
+</body></html>
